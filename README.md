@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <b>Current Framework Version: 0.4.0</b>
+  <b>Current Framework Version: 0.1.0</b>
 </p>
 
 Javascript port for Flashpunk version

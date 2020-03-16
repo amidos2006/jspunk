@@ -82,7 +82,7 @@ export class Spritemap extends IndexedGraphic{
     draw(renderTarget,x,y){
         if(this.current in this.animations){
             let anim = this.animations[this.current];
-            this.index = Math.floor(anim.index);
+            this.index = anim.indeces[Math.floor(anim.index)];
             anim.index += anim.fps/60;
             if(anim.index >= anim.indeces.length){
                 if(anim.loop){
@@ -192,7 +192,8 @@ export class AnimTileMap extends TileMap{
                 let ty = Math.max(0, shown_y + gy);
                 this._temp_grid[ty][tx] = this.grid[ty][tx];
                 if (this.grid[ty][tx] >= 0 && this.grid[ty][tx] in this.animations) {
-                    this.grid[ty][tx] += Math.floor(this.animations[this.grid[ty][tx]].index);
+                    let anim = this.animations[this.grid[ty][tx]];
+                    this.grid[ty][tx] = anim.indeces[Math.floor(anim.index)];
                 }
             }
         }

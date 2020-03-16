@@ -63,6 +63,7 @@ export default class JSP{
         this._currentWorld = null;
         this._cache = {};
         this.backcolor = makecol(0, 0, 0);
+        this.camera = {x:0, y:0};
         document.getElementById("game_canvas").style.width = width * scale + "px";
         document.getElementById("game_canvas").style.height = height * scale + "px";
         if(debug){

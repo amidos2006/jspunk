@@ -34,19 +34,25 @@ export default class World{
             if(!e.alive) continue;
             e.update();
         }
-        for(let e of this._addedEntitites){
+        let temp = this._addedEntitites.slice(0);
+        this._addedEntitites.length = 0;
+        for(let e of temp){
             if(this._activeEntities.indexOf(e) >= 0){
                 continue;
             }
+            e.world = this;
+            e.added();
             this._activeEntities.push(e);
         }
-        this._addedEntitites.length = 0;
+        temp = this._removedEntities.slice(0);
+        this._removedEntities.length = 0;
         for (let e of this._removedEntities) {
             if (this._activeEntities.indexOf(e) >= 0) {
+                e.removed();
+                e.world = null;
                 this._activeEntities.splice(this._activeEntities.indexOf(e), 1);
             }
         }
-        this._removedEntities.length = 0;
     }
 
     draw(){

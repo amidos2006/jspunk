@@ -1,3 +1,5 @@
+import JSP from "./JSP.js";
+
 export default class Entity{
     constructor(x,y,graphic){
         if(x == undefined) x = 0;
@@ -11,6 +13,16 @@ export default class Entity{
         this.graphic = graphic;
         this.render_target=null;
         this.layer = 0;
+        this.followCamera = true;
+        this.world = null;
+    }
+
+    added(){
+
+    }
+
+    removed(){
+
     }
 
     update(){
@@ -22,6 +34,7 @@ export default class Entity{
         
         let currentTarget = canvas;
         if(this.render_target != null) currentTarget = this.render_target;
-        this.graphic.draw(currentTarget, this.x, this.y);
+        let camera = this.followCamera?1:0;
+        this.graphic.draw(currentTarget, this.x - camera * JSP.camera.x, this.y - camera * JSP.camera.y);
     }
 }

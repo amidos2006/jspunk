@@ -1,2 +1,13 @@
-# jspunk
+<p align="center">
+	<img height="300px" src="logo.gif"/>
+</p>
+
+<h1 align="center">
+	JSPunk
+</h1>
+
+<p align="center">
+  <b>Current Framework Version: 0.4.0</b>
+</p>
+
 Javascript port for Flashpunk version

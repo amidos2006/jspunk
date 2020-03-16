@@ -65,7 +65,20 @@ export default class JSP{
         this.backcolor = makecol(0, 0, 0);
         document.getElementById("game_canvas").style.width = width * scale + "px";
         document.getElementById("game_canvas").style.height = height * scale + "px";
-        if(debug) enable_debug('debug');
+        if(debug){
+            enable_debug('debug');
+        }
+        else{
+            document.body.style.padding = "0px";
+            document.body.style.margin = "0px";
+            document.getElementById("debug").style.display = "none";
+            let canvas = document.getElementById("game_canvas");
+            canvas.style.border = "0px";
+            canvas.style.margin = "0px";
+            canvas.style.padding = "0px";
+            canvas.style.borderRadius = "0px";
+            canvas.style.boxShadow = "none";
+        }
         allegro_init_all("game_canvas", width, height, false);
     }
 

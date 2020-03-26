@@ -29,6 +29,26 @@ export default class World{
         this._removedEntities.push(e);
     }
 
+    getClass(type){
+        let result = [];
+        for(let e of this._activeEntities){
+            if(e instanceof type){
+                result.push(e);
+            }
+        }
+        return result;
+    }
+
+    getName(name){
+        let result = [];
+        for (let e of this._activeEntities) {
+            if (e.name == name) {
+                result.push(e);
+            }
+        }
+        return result;
+    }
+
     update(){
         for(let e of this._activeEntities){
             if(!e.alive) continue;
@@ -46,7 +66,7 @@ export default class World{
         }
         temp = this._removedEntities.slice(0);
         this._removedEntities.length = 0;
-        for (let e of this._removedEntities) {
+        for (let e of temp) {
             if (this._activeEntities.indexOf(e) >= 0) {
                 e.removed();
                 e.world = null;

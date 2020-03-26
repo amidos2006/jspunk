@@ -18,12 +18,35 @@ export class Graphic{
     }
 
     draw(renderTarget,x,y){
+        //need to check if in camera or not before drawing
         renderTarget.context.globalAlpha = this.alpha; 
         pivot_window_sprite(renderTarget, this.source, Math.floor(x), Math.floor(y), 
             Math.floor(this.cx), Math.floor(this.cy), 
             this.angle, this.scaleX, this.scaleY, 
             Math.floor(this.wx), Math.floor(this.wy), Math.floor(this.width), Math.floor(this.height));
         renderTarget.context.globalAlpha = 1;
+    }
+}
+
+export class Background extends Graphic{
+    constructor(source, repeatX, repeatY){
+        if(repeatX == undefined) repeatX = true;
+        if(repeatY == undefined) repeatY = true;
+        super(source);
+        this.repeatX = repeatX;
+        this.repeatY = repeatY;
+    }
+
+    draw(renderTarget,x,y){
+        let xnumber = Math.ceil(SCREEN_W / this.width);
+        let ynumber = Math.ceil(SCREEN_H / this.height);
+        let shiftX = Math.floor(x % this.width);
+        let shiftY = Math.floor(y % this.height);
+        for(let dy=-1; dy<ynumber+2; dy++){
+            for(let dx=-1; dx<xnumber+2; dx++){
+                super.draw(renderTarget, shiftX + dx*this.width, shiftY + dy*this.height);
+            }
+        }
     }
 }
 
@@ -131,8 +154,8 @@ export class TileMap extends IndexedGraphic{
         let theight = this.height * this.scaleY;
         let shown_x = Math.max(0, Math.floor(-x / twidth));
         let shown_y = Math.max(0, Math.floor(-y / theight));
-        let shown_width = Math.min(this.grid[0].length, Math.ceil(SCREEN_W / twidth) + 2);
-        let shown_height = Math.min(this.grid.length, Math.ceil(SCREEN_H / theight) + 2);
+        let shown_width = Math.min(this.grid[0].length, Math.ceil(SCREEN_W / twidth) + 2) - shown_x;
+        let shown_height = Math.min(this.grid.length, Math.ceil(SCREEN_H / theight) + 2) - shown_y;
         for (let gy = -1; gy < shown_height; gy++) {
             for (let gx = -1; gx < shown_width; gx++) {
                 let tx = Math.max(0, shown_x + gx);
@@ -183,8 +206,8 @@ export class AnimTileMap extends TileMap{
         let theight = this.height * this.scaleY;
         let shown_x = Math.max(0, Math.floor(-x / twidth));
         let shown_y = Math.max(0, Math.floor(-y / theight));
-        let shown_width = Math.min(this.grid[0].length, Math.ceil(SCREEN_W / twidth) + 2);
-        let shown_height = Math.min(this.grid.length, Math.ceil(SCREEN_H / theight) + 2);
+        let shown_width = Math.min(this.grid[0].length, Math.ceil(SCREEN_W / twidth) + 2) - shown_x;
+        let shown_height = Math.min(this.grid.length, Math.ceil(SCREEN_H / theight) + 2) - shown_y;
 
         for (let gy = -1; gy < shown_height; gy++) {
             for (let gx = -1; gx < shown_width; gx++) {

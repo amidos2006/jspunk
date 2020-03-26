@@ -1,4 +1,5 @@
 import JSP from "./JSP.js";
+import { Hitbox } from "./hitbox.js";
 
 export default class Entity{
     constructor(x,y,graphic){
@@ -15,6 +16,8 @@ export default class Entity{
         this.layer = 0;
         this.followCamera = true;
         this.world = null;
+        this.hitbox = new Hitbox(-1, -1, 2, 2);
+        this.name = null;
     }
 
     added(){
@@ -27,6 +30,43 @@ export default class Entity{
 
     update(){
         
+    }
+
+    checkPoint(x, y){
+        this.hitbox._move(this.x, this.y);
+        let result = this.hitbox.checkPoint(x, y);
+        this.hitbox._move(0, 0);
+        return result;
+    }
+
+    checkCollision(name, x, y) {
+        let result = [];
+        let entities = this.world.getName(name);
+        for (let e of entities) {
+            this.hitbox._move(this.x + x, this.y + y);
+            e.hitbox._move(e.x, e.y);
+            if (this.hitbox.checkCollide(e.hitbox)) {
+                result.push(e);
+            }
+            this.hitbox._move(0, 0);
+            e.hitbox._move(0, 0);
+        }
+        return result;
+    }
+
+    checkClassCollision(type, x, y) {
+        let result = [];
+        let entities = this.world.getClass(type);
+        for (let e of entities) {
+            this.hitbox._move(this.x + x, this.y + y);
+            e.hitbox._move(e.x, e.y);
+            if (this.hitbox.checkCollide(e.hitbox)) {
+                result.push(e);
+            }
+            this.hitbox._move(0, 0);
+            e.hitbox._move(0, 0);
+        }
+        return result;
     }
 
     draw(){

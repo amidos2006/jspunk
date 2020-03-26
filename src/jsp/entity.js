@@ -9,6 +9,7 @@ export default class Entity{
 
         this.alive = true;
         this.visible = true;
+        this.collidable = true;
         this.x = x;
         this.y = y;
         this.graphic = graphic;
@@ -16,8 +17,8 @@ export default class Entity{
         this.layer = 0;
         this.followCamera = true;
         this.world = null;
-        this.hitbox = new Hitbox(-1, -1, 2, 2);
-        this.name = null;
+        this.mask = new Hitbox(-1, -1, 2, 2);
+        this.type = null;
     }
 
     added(){
@@ -32,41 +33,93 @@ export default class Entity{
         
     }
 
-    checkPoint(x, y){
-        this.hitbox._move(this.x, this.y);
-        let result = this.hitbox.checkPoint(x, y);
-        this.hitbox._move(0, 0);
+    collidePoint(x, y, px, py){
+        this.mask._move(x, y);
+        let result = this.mask._collidePoint(px, py);
+        this.mask._move(0, 0);
         return result;
     }
 
-    checkCollision(name, x, y) {
+    collideRect(x, y, rx, ry, rwidth, rheight){
+        let other = new Hitbox(rx, ry, rwidth, rheight);
+        this.mask._move(x, y);
+        let result = this.mask.checkCollide(other);
+        this.mask._move(0, 0);
+        return result;
+    }
+
+    collideWith(e, x, y){
+        if(!e.collidable) return null;
+        this.mask._move(x, y);
+        let result = this.mask.checkCollide(e.mask);
+        this.mask._move(0, 0);
+        return result? e: null;
+    }
+
+    collideType(type, x, y){
         let result = [];
-        let entities = this.world.getName(name);
+        let entities = this.world.getType(type);
         for (let e of entities) {
-            this.hitbox._move(this.x + x, this.y + y);
-            e.hitbox._move(e.x, e.y);
-            if (this.hitbox.checkCollide(e.hitbox)) {
+            if (!e.collidable) continue;
+            this.mask._move(x, y);
+            e.mask._move(e.x, e.y);
+            if (this.mask.checkCollide(e.mask)) {
                 result.push(e);
             }
-            this.hitbox._move(0, 0);
-            e.hitbox._move(0, 0);
+            this.mask._move(0, 0);
+            e.mask._move(0, 0);
         }
         return result;
     }
 
-    checkClassCollision(type, x, y) {
+    collideTypeFirst(type, x, y) {
+        let entities = this.world.getType(type);
+        for (let e of entities) {
+            if (!e.collidable) continue;
+            this.mask._move(x, y);
+            e.mask._move(e.x, e.y);
+            if (this.mask.checkCollide(e.mask)) {
+                this.mask._move(0, 0);
+                e.mask._move(0, 0);
+                return e;
+            }
+            this.mask._move(0, 0);
+            e.mask._move(0, 0);
+        }
+        return null;
+    }
+
+    collideClass(type, x, y) {
         let result = [];
         let entities = this.world.getClass(type);
         for (let e of entities) {
-            this.hitbox._move(this.x + x, this.y + y);
-            e.hitbox._move(e.x, e.y);
-            if (this.hitbox.checkCollide(e.hitbox)) {
+            if (!e.collidable) continue;
+            this.mask._move(x, y);
+            e.mask._move(e.x, e.y);
+            if (this.mask.checkCollide(e.mask)) {
                 result.push(e);
             }
-            this.hitbox._move(0, 0);
-            e.hitbox._move(0, 0);
+            this.mask._move(0, 0);
+            e.mask._move(0, 0);
         }
         return result;
+    }
+
+    collideClassFirst(type, x, y) {
+        let entities = this.world.getClass(type);
+        for (let e of entities) {
+            if (!e.collidable) continue;
+            this.mask._move(x, y);
+            e.mask._move(e.x, e.y);
+            if (this.mask.checkCollide(e.mask)) {
+                this.mask._move(0, 0);
+                e.mask._move(0, 0);
+                return e;
+            }
+            this.mask._move(0, 0);
+            e.mask._move(0, 0);
+        }
+        return null;
     }
 
     draw(){

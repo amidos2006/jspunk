@@ -13,7 +13,7 @@ export class Hitbox{
         this.sy = y;
     }
 
-    checkPoint(x, y){
+    _collidePoint(x, y){
         return x >= this.x + this.sx && 
             y >= this.y + this.sy && 
             x < this.x + this.width + this.sx && 
@@ -21,10 +21,10 @@ export class Hitbox{
     }
 
     _collideHitbox(other){
-        return (this.x + this.sx < other.x + other.width + other.sx &&
+        return this.x + this.sx < other.x + other.width + other.sx &&
             this.x + this.width + this.sx > other.x + other.sx &&
             this.y + this.sy < other.y + other.height + other.sy &&
-            this.y + this.height + this.sy > other.y + other.sy);
+            this.y + this.height + this.sy > other.y + other.sy;
     }
 
     _collideMask(other){
@@ -36,6 +36,9 @@ export class Hitbox{
     }
 
     checkCollide(other){
+        if(other  == null){
+            return this.collidePoint(other.x, other.y);
+        }
         if (other instanceof Hitbox){
             return this._collideHitbox(other);
         }

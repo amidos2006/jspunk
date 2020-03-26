@@ -26,12 +26,14 @@ export default class World{
         }
         e.alive = false;
         e.visible = false;
+        e.collidable = false;
         this._removedEntities.push(e);
     }
 
     getClass(type){
         let result = [];
         for(let e of this._activeEntities){
+            if (!e.alive) continue;
             if(e instanceof type){
                 result.push(e);
             }
@@ -39,14 +41,56 @@ export default class World{
         return result;
     }
 
-    getName(name){
+    classFirst(type) {
+        for (let e of this._activeEntities) {
+            if (!e.alive) continue;
+            if (e instanceof type) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    getType(type){
         let result = [];
         for (let e of this._activeEntities) {
-            if (e.name == name) {
+            if (!e.alive) continue;
+            if (e.type == type) {
                 result.push(e);
             }
         }
         return result;
+    }
+
+    typeFirst(type) {
+        for (let e of this._activeEntities) {
+            if (!e.alive) continue;
+            if (e.type == type) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    getLayer(layer){
+        let result = [];
+        for (let e of this._activeEntities) {
+            if (!e.alive) continue;
+            if (e.layer == layer) {
+                result.push(e);
+            }
+        }
+        return result;
+    }
+
+    layerFirst(layer) {
+        for (let e of this._activeEntities) {
+            if (!e.alive) continue;
+            if (e.layer == layer) {
+                return e;
+            }
+        }
+        return null;
     }
 
     update(){

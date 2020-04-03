@@ -9,8 +9,8 @@ export class Graphic{
         this.wy = wy;
         this.width = ww;
         this.height = wh;
-        this.cx = this.width/2;
-        this.cy = this.height/2;
+        this.cx = 0;
+        this.cy = 0;
         this.scaleX = 1;
         this.scaleY = 1;
         this.angle = 0;
@@ -28,7 +28,7 @@ export class Graphic{
     }
 }
 
-export class Background extends Graphic{
+export class Backdrop extends Graphic{
     constructor(source, repeatX, repeatY){
         if(repeatX == undefined) repeatX = true;
         if(repeatY == undefined) repeatY = true;
@@ -139,6 +139,14 @@ export class TileMap extends IndexedGraphic{
         }
     }
 
+    getGridWidth(){
+        return this.grid[0].length;
+    }
+
+    getGridHeight(){
+        return this.grid.length;
+    }
+
     setTile(x,y,value){
         if(x < 0 || y < 0 || x >= this.grid[0].length || x >= this.grid.length) return;
         this.grid[y][x] = value;
@@ -154,8 +162,8 @@ export class TileMap extends IndexedGraphic{
         let theight = this.height * this.scaleY;
         let shown_x = Math.max(0, Math.floor(-x / twidth));
         let shown_y = Math.max(0, Math.floor(-y / theight));
-        let shown_width = Math.min(this.grid[0].length, Math.ceil(SCREEN_W / twidth) + 2) - shown_x;
-        let shown_height = Math.min(this.grid.length, Math.ceil(SCREEN_H / theight) + 2) - shown_y;
+        let shown_width = Math.min(this.grid[0].length - shown_x, Math.ceil(SCREEN_W / twidth) + 2);
+        let shown_height = Math.min(this.grid.length - shown_y, Math.ceil(SCREEN_H / theight) + 2);
         for (let gy = -1; gy < shown_height; gy++) {
             for (let gx = -1; gx < shown_width; gx++) {
                 let tx = Math.max(0, shown_x + gx);
@@ -206,8 +214,8 @@ export class AnimTileMap extends TileMap{
         let theight = this.height * this.scaleY;
         let shown_x = Math.max(0, Math.floor(-x / twidth));
         let shown_y = Math.max(0, Math.floor(-y / theight));
-        let shown_width = Math.min(this.grid[0].length, Math.ceil(SCREEN_W / twidth) + 2) - shown_x;
-        let shown_height = Math.min(this.grid.length, Math.ceil(SCREEN_H / theight) + 2) - shown_y;
+        let shown_width = Math.min(this.grid[0].length - shown_x, Math.ceil(SCREEN_W / twidth) + 2);
+        let shown_height = Math.min(this.grid.length - shown_y, Math.ceil(SCREEN_H / theight) + 2);
 
         for (let gy = -1; gy < shown_height; gy++) {
             for (let gx = -1; gx < shown_width; gx++) {

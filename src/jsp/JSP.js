@@ -31,6 +31,14 @@ export default class JSP{
         this._cache[name] = load_font(path);
     }
 
+    static loadJSON(name, path){
+        name = "json_" + name;
+        if (name in this._cache) {
+            return;
+        }
+        this._cache[name] = load_json(path);
+    }
+
     static getSFX(name){
         name = "sfx_" + name;
         if (!name in this._cache) {
@@ -49,6 +57,14 @@ export default class JSP{
 
     static getFNT(name) {
         name = "fnt_" + name;
+        if (!name in this._cache) {
+            return null;
+        }
+        return this._cache[name];
+    }
+
+    static getJSON(name) {
+        name = "json_" + name;
         if (!name in this._cache) {
             return null;
         }

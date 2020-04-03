@@ -43,17 +43,17 @@ export class Hitbox{
     }
 
     checkCollide(other){
+        if(this == other){
+            return false;
+        }
         if(other  == null){
             return this.collidePoint(other.x, other.y);
         }
+        if (other instanceof Grid) {
+            return this._collideGrid(other);
+        }
         if (other instanceof Hitbox){
             return this._collideHitbox(other);
-        }
-        if(other instanceof PixelMask){
-            return this._collidePixel(other);
-        }
-        if(other instanceof Grid){
-            return this._collideGrid(other);
         }
         return false;
     }

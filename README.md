@@ -22,6 +22,7 @@ Javascript port for Flashpunk version. In the current version, it is build on [a
 - Tilemap Graphic class
 - Backdrop Graphic class
 - Animated Tilemap Graphic class
+- Text class with Bitmap Text class
 - Hitbox Collision class
 - Grid Collision class
 - Sorting by layer value (need optimization maybe insertion sort so always insert in the correct location)
@@ -39,7 +40,6 @@ Javascript port for Flashpunk version. In the current version, it is build on [a
 - GraphicList
 - MaskList
 - Sfx class
-- Text class with Bitmap Text class maybe monospace for simplicity
 - ParticleEmitter as Graphic class
 - Smoothing as an input parameter that can be enabled and disabled at anytime
 - Mouse have window position and world position

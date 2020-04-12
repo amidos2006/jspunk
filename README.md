@@ -22,7 +22,7 @@ Javascript port for Flashpunk version. In the current version, it is build on [a
 - Tilemap Graphic class
 - Backdrop Graphic class
 - Animated Tilemap Graphic class
-- Text class with Bitmap Text class
+- Text class and Bitmap Text class
 - Hitbox Collision class
 - Grid Collision class
 - Sorting by layer value (need optimization maybe insertion sort so always insert in the correct location)

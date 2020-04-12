@@ -51,12 +51,66 @@ export class Graphic{
     }
 }
 
-export class Text extends Graphic{
-    constructor(text, bitmap_font){
+export class Text{
+    constructor(font, text, size, align, tint, outline, width){
+        if(text == undefined) text = "";
+        if(size == undefined) size = 16;
+        if(align == undefined) align = "left"
+        if(tint == undefined) tint = makecol(255, 255, 255);
+        this.cx = 0;
+        this.cy = 0;
+        this.angle = 0;
+        this.alpha = 1;
+        this.font = font;
+        this.size = size;
+        this.align = align;
+        this.tint = tint;
+        this.text = text;
+        this.outline = outline;
+        this.outlineWidth = width;
+    }
+
+    get text(){
+        return this._text;
+    }
+
+    set text(value){
+        this._text = value;
+        canvas.context.font = this.size + "px " + this.font.name;
+        this.width = canvas.context.measureText(value).width;
+        this.height = this.size;
+    }
+
+    draw(renderTarget, x, y){
+        renderTarget.context.save();
+        renderTarget.context.globalAlpha = this.alpha; 
+        renderTarget.context.translate(x, y);
+        renderTarget.context.rotate(RAD(this.angle));
+        renderTarget.context.translate(-this.cx, -this.cy);
+        switch(this.align){
+            case "left":
+                textout(renderTarget, this.font, this.text, 0, 0, this.size, 
+                    this.tint, this.outline, this.outlineWidth);
+                break;
+            case "right":
+                textout_right(renderTarget, this.font, this.text, 0, 0, this.size, 
+                    this.tint, this.outline, this.outlineWidth);
+                break;
+            case "center":
+                textout_centre(renderTarget, this.font, this.text, 0, 0, this.size, 
+                    this.tint, this.outline, this.outlineWidth);
+                break;
+        }
+        renderTarget.context.restore();
+    }
+}
+
+export class BitmapText extends Graphic{
+    constructor(bitmap_font, text){
+        if(text == undefined) text = "";
         super(create_bitmap(1, 1));
         this.font_bitmap = bitmap_font.bitmap;
         this.font_data = bitmap_font.data;
-        this.newline = bitmap_font.newline;
         this.text = text;
     }
 

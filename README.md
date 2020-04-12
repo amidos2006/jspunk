@@ -21,8 +21,12 @@ Javascript port for Flashpunk version. In the current version, it is build on [a
 - Spritemap Graphic class
 - Tilemap Graphic class
 - Backdrop Graphic class
+- Tinting
 - Animated Tilemap Graphic class
 - Text class and Bitmap Text class
+- Alarms
+- Tweens
+- Ease Functions
 - Hitbox Collision class
 - Grid Collision class
 - Sorting by layer value (need optimization maybe insertion sort so always insert in the correct location)
@@ -30,18 +34,18 @@ Javascript port for Flashpunk version. In the current version, it is build on [a
 - Preloading and Debugging features from [allegrojs](http://allegrojs.net/)
 
 ## Missing Features
-- Splash Screens
-- Alarms
-- Tweens
-- Ease Functions
+- JSPunk Splash Screens
 - Pixel Mask
-- Tinting (Multiply filter with destination a top filter)
 - Camera with rotation and scaling and tests
+- Make camera as input in all draw functions of graphic classes
+- Backdrop parallax
 - GraphicList
 - MaskList
 - Sfx class
 - ParticleEmitter as Graphic class
 - Smoothing as an input parameter that can be enabled and disabled at anytime
 - Mouse have window position and world position
-- Pixel Draw library
-- Backdrop parallax
+- Input class
+- Draw class
+- (Maybe) automatically bind callback functions to its parent class
+- (Maybe) all child classes have access to their parent class

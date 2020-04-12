@@ -1,8 +1,11 @@
+import { Tweener } from "./tweens.js";
+
 export default class World{
     constructor(){
         this._activeEntities = [];
         this._removedEntities = [];
         this._addedEntitites = [];
+        this._tweener = new Tweener();
     }
 
     begin(){
@@ -13,10 +16,21 @@ export default class World{
         
     }
 
+    addTween(t){
+        this._tweener.addTween(t);
+    }
+
+    removeTween(t){
+        this._tweener.removeTween(t);
+    }
+
     addEntity(e){
         if(this._addedEntitites.indexOf(e) >= 0){
             return;
         }
+        e.alive = true;
+        e.visible = true;
+        e.collidable = true;
         this._addedEntitites.push(e);
     }
 
@@ -94,6 +108,8 @@ export default class World{
     }
 
     update(){
+        this._tweener.update();
+
         for(let e of this._activeEntities){
             if(!e.alive) continue;
             e.update();
@@ -125,5 +141,11 @@ export default class World{
             if (!e.visible) continue;
             e.draw();
         }
+    }
+}
+
+export class SplashWorld extends World{
+    constructor(graphic, time, nextWorld){
+        
     }
 }

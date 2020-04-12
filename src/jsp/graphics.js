@@ -52,22 +52,29 @@ export class Graphic{
 }
 
 export class Text{
-    constructor(font, text, size, align, tint, outline, width){
+    constructor(font, text, size, tint, outlineTint, outlineWidth){
         if(text == undefined) text = "";
         if(size == undefined) size = 16;
-        if(align == undefined) align = "left"
         if(tint == undefined) tint = makecol(255, 255, 255);
         this.cx = 0;
         this.cy = 0;
         this.angle = 0;
         this.alpha = 1;
         this.font = font;
-        this.size = size;
-        this.align = align;
+        this._size = size;
         this.tint = tint;
-        this.text = text;
-        this.outline = outline;
-        this.outlineWidth = width;
+        this._text = text;
+        this.outline = outlineTint;
+        this.outlineWidth = outlineWidth;
+        this._modifyMetrics();
+    }
+
+    _modifyMetrics() {
+        canvas.context.font = this.size + "px " + this.font.name;
+        let metrics = canvas.context.measureText(this.text);
+        this.width = Math.floor(metrics.width);
+        this.height = Math.floor(Math.abs(metrics.actualBoundingBoxAscent -
+            metrics.actualBoundingBoxDescent));
     }
 
     get text(){
@@ -76,9 +83,16 @@ export class Text{
 
     set text(value){
         this._text = value;
-        canvas.context.font = this.size + "px " + this.font.name;
-        this.width = canvas.context.measureText(value).width;
-        this.height = this.size;
+        this._modifyMetrics();
+    }
+
+    get size(){
+        return this._size;
+    }
+
+    set size(value){
+        this._size = value;
+        this._modifyMetrics();
     }
 
     draw(renderTarget, x, y){
@@ -86,21 +100,9 @@ export class Text{
         renderTarget.context.globalAlpha = this.alpha; 
         renderTarget.context.translate(x, y);
         renderTarget.context.rotate(RAD(this.angle));
-        renderTarget.context.translate(-this.cx, -this.cy);
-        switch(this.align){
-            case "left":
-                textout(renderTarget, this.font, this.text, 0, 0, this.size, 
+        renderTarget.context.translate(-this.cx, this.height - this.cy);
+        textout(renderTarget, this.font, this.text, 0, 0, this.size, 
                     this.tint, this.outline, this.outlineWidth);
-                break;
-            case "right":
-                textout_right(renderTarget, this.font, this.text, 0, 0, this.size, 
-                    this.tint, this.outline, this.outlineWidth);
-                break;
-            case "center":
-                textout_centre(renderTarget, this.font, this.text, 0, 0, this.size, 
-                    this.tint, this.outline, this.outlineWidth);
-                break;
-        }
         renderTarget.context.restore();
     }
 }

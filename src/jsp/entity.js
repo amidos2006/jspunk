@@ -1,5 +1,6 @@
 import JSP from "./JSP.js";
 import { Hitbox } from "./hitbox.js";
+import { Tweener } from "./tweens.js";
 
 export default class Entity{
     constructor(x,y,graphic){
@@ -19,6 +20,7 @@ export default class Entity{
         this.world = null;
         this.mask = new Hitbox(-1, -1, 2, 2);
         this.type = null;
+        this._tweener = new Tweener();
     }
 
     added(){
@@ -29,8 +31,16 @@ export default class Entity{
 
     }
 
+    addTween(t){
+        this._tweener.addTween(t);
+    }
+
+    removeTween(t){
+        this._tweener.removeTween(t);
+    }
+
     update(){
-        
+        this._tweener.update();
     }
 
     collidePoint(x, y, px, py){

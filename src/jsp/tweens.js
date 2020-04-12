@@ -68,14 +68,25 @@ export class Tween {
         this._active = false;
         this.alive = true;
         this.speed = 1;
+        this.delay = 0;
+    }
+
+    _frame_update(){
+
     }
 
     _update(){
         if(!(this.alive && this._active)){
-            return false;
+            return;
+        }
+        
+        if(this.delay > 0){
+            this.delay -= 1;
+            return;
         }
 
         this._current += this._direction * this.speed;
+        this._frame_update();
         if (this._direction > 0){
             if (this._current >= this._total){
                 this._finish();
@@ -86,7 +97,6 @@ export class Tween {
                 this._finish();
             }
         }
-        return true;
     }
 
     _finish(){
@@ -129,7 +139,7 @@ export class Tween {
     }
 
     get percentage(){
-        return this._current / this._total;
+        return Math.max(0, Math.min(this._current / this._total, 1));
     }
 }
 
@@ -150,11 +160,9 @@ export class VarTween extends Tween {
         this.ease = ease;
     }
 
-    _update(){
-        if(super._update()){
-            let perc = this.ease(this.percentage);
-            this.object[this.varName] = (this.toValue - this.fromValue) * perc + this.fromValue;
-        }
+    _frame_update(){
+        let perc = this.ease(this.percentage);
+        this.object[this.varName] = (this.toValue - this.fromValue) * perc + this.fromValue;
     }
 }
 

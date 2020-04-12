@@ -104,8 +104,9 @@ export default class JSP{
         allegro_init_all("game_canvas", width, height, false);
     }
 
-    static start(){
+    static start(callback){
         ready(function () {
+            if(callback) callback();
             loop(function () {
                 clear_to_color(canvas, JSP.backcolor);
                 JSP._update();

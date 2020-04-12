@@ -31,8 +31,10 @@ export default class Entity{
 
     }
 
-    addTween(t){
+    addTween(t, start){
+        if (start == undefined) start = false;
         this._tweener.addTween(t);
+        if (start) t.start();
     }
 
     removeTween(t){

@@ -1,4 +1,6 @@
-import { Tweener } from "./tweens.js";
+import { Tweener, VarTween, Tween } from "./tweens.js";
+import Entity from "./entity.js";
+import JSP from "./JSP.js";
 
 export default class World{
     constructor(){
@@ -16,8 +18,10 @@ export default class World{
         
     }
 
-    addTween(t){
+    addTween(t, start){
+        if(start == undefined) start = false;
         this._tweener.addTween(t);
+        if(start) t.start();
     }
 
     removeTween(t){
@@ -145,7 +149,18 @@ export default class World{
 }
 
 export class SplashWorld extends World{
-    constructor(graphic, time, nextWorld){
-        
+    constructor(graphic, frames, nextWorld){
+        super();
+        graphic.alpha = 0;
+        this.splashEntity = new Entity(SCREEN_W/2, SCREEN_H/2, graphic);
+        this.addEntity(this.splashEntity);
+        this.addTween(new VarTween(graphic, "alpha", 0, 1, frames, Tween.PINGPONG, function () {
+            if (graphic.alpha == 0) {
+                JSP.world = nextWorld;
+            }
+            if(graphic.alpha == 1){
+                this.delay = frames;
+            }
+        }), true);
     }
 }

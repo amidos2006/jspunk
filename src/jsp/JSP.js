@@ -28,7 +28,7 @@ export default class JSP{
         if (name in this._cache) {
             return;
         }
-        this._cache[name] = load_font(path);
+        this._cache[name] = load_bitmap_font(path);
     }
 
     static loadJSON(name, path){

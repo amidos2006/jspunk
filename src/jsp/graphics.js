@@ -15,16 +15,92 @@ export class Graphic{
         this.scaleY = 1;
         this.angle = 0;
         this.alpha = 1;
+        this._tintedImage = create_bitmap(source.w, source.h);
+        this.tint = 0xffffff;
+    }
+
+    get tint(){
+        return this._tint;
+    }
+
+    set tint(value){
+        this._tint = value;
+
+        this._tintedImage.context.clearRect(0, 0, this._tintedImage.w, this._tintedImage.h);
+
+        _fillstyle(this._tintedImage, this._tint);
+        this._tintedImage.context.fillRect(0, 0, this._tintedImage.w, this._tintedImage.h);
+        
+        this._tintedImage.context.globalCompositeOperation = "multiply";
+        this._tintedImage.context.drawImage(this.source.canvas, 0, 0);
+        
+        this._tintedImage.context.globalCompositeOperation = "destination-atop";
+        this._tintedImage.context.drawImage(this.source.canvas, 0, 0);
+        
+        this._tintedImage.context.globalCompositeOperation = "source-over";
     }
 
     draw(renderTarget,x,y){
         //need to check if in camera or not before drawing
         renderTarget.context.globalAlpha = this.alpha; 
-        pivot_window_sprite(renderTarget, this.source, Math.floor(x), Math.floor(y), 
+        pivot_window_sprite(renderTarget, this._tintedImage, Math.floor(x), Math.floor(y), 
             Math.floor(this.cx), Math.floor(this.cy), 
             this.angle, this.scaleX, this.scaleY, 
             Math.floor(this.wx), Math.floor(this.wy), Math.floor(this.width), Math.floor(this.height));
         renderTarget.context.globalAlpha = 1;
+    }
+}
+
+export class Text extends Graphic{
+    constructor(text, bitmap_font){
+        super(create_bitmap(1, 1));
+        this.font_bitmap = bitmap_font.bitmap;
+        this.font_data = bitmap_font.data;
+        this.newline = bitmap_font.newline;
+        this.text = text;
+    }
+
+    get text(){
+        return this._text;
+    }
+
+    set text(value){
+        this._text = value;
+        let sx = 0, sy= 0;
+        let width = 0, height = 0;
+        let minYOff = Number.MAX_VALUE;
+        for (let c of this._text) {
+            let rect = this.font_data[c.charCodeAt(0)];
+            width += rect.xadv;
+            height = Math.max(height, rect.h);
+            minYOff = Math.min(minYOff, rect.yoff);
+        }
+        let renderTarget = this.source;
+        renderTarget.w = width, renderTarget.h = height;
+        renderTarget.canvas.width = width, renderTarget.canvas.height = height;
+        renderTarget.context.clearRect(0, 0, width, height);
+        let tintedImage = this._tintedImage;
+        tintedImage.w = width, tintedImage.h = height;
+        tintedImage.canvas.width = width, tintedImage.canvas.height = height;
+        this._tintedImage = this.font_bitmap;
+        let scaleX = this.scaleX, scaleY = this.scaleY;
+        this.scaleX = this.scaleY = 1;
+        let cx = this.cx, cy = this.cy;
+        for (let c of this._text) {
+            let rect = this.font_data[c.charCodeAt(0)];
+            this.wx = rect.x, this.wy = rect.y;
+            this.width = rect.w, this.height = rect.h;
+            this.cx = -rect.xoff, this.cy = -rect.yoff;
+            super.draw(renderTarget, sx, sy - minYOff);
+            sx += rect.xadv;
+        }
+        this.source = renderTarget;
+        this._tintedImage = tintedImage;
+        this.wx = 0, this.wy = 0, this.cx = 0, this.cy = 0;
+        this.width = width, this.height = height;
+        this.tint = this._tint;
+        this.cx = cx, this.cy = cy;
+        this.scaleX = scaleX, this.scaleY = scaleY;
     }
 }
 

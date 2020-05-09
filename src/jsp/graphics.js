@@ -1,3 +1,6 @@
+import { Camera, RenderTarget, Color } from "./rendering.js";
+import JSP from "./JSP.js";
+
 export class Graphic{
     constructor(source,wx,wy,ww,wh){
         if(wx == undefined) wx=0;
@@ -15,7 +18,7 @@ export class Graphic{
         this.scaleY = 1;
         this.angle = 0;
         this.alpha = 1;
-        this._tintedImage = create_bitmap(source.w, source.h);
+        this._tintedImage = new RenderTarget(source.w, source.h);
         this.tint = 0xffffff;
     }
 
@@ -28,8 +31,7 @@ export class Graphic{
 
         this._tintedImage.context.clearRect(0, 0, this._tintedImage.w, this._tintedImage.h);
 
-        _fillstyle(this._tintedImage, this._tint);
-        this._tintedImage.context.fillRect(0, 0, this._tintedImage.w, this._tintedImage.h);
+        this._tintedImage.context.fillRect(0, 0, this._tintedImage.w, this._tintedImage.h, this._tint);
         
         this._tintedImage.context.globalCompositeOperation = "multiply";
         this._tintedImage.context.drawImage(this.source.canvas, 0, 0);
@@ -40,22 +42,28 @@ export class Graphic{
         this._tintedImage.context.globalCompositeOperation = "source-over";
     }
 
-    draw(renderTarget,x,y){
+    draw(renderTarget, x, y, camera){
         //need to check if in camera or not before drawing
-        renderTarget.context.globalAlpha = this.alpha; 
-        pivot_window_sprite(renderTarget, this._tintedImage, Math.floor(x), Math.floor(y), 
-            Math.floor(this.cx), Math.floor(this.cy), 
-            this.angle, this.scaleX, this.scaleY, 
+        renderTarget.context.save();
+        renderTarget.context.translate(-Math.floor(camera.x), -Math.floor(camera.y));
+        renderTarget.context.rotate(Math.RAD(camera.angle));
+        renderTarget.context.scale(camera.zoom, camera.zoom);
+        renderTarget.context.translate(-Math.floor(camera.anchorX * renderTarget.width), 
+            -Math.floor(camera.anchorY * renderTarget.height));
+        renderTarget.drawTexture(this._tintedImage, Math.floor(x), Math.floor(y), this.angle, 
+            this.scaleX, this.scaleY, this.alpha, Math.floor(this.cx), Math.floor(this.cy), 
             Math.floor(this.wx), Math.floor(this.wy), Math.floor(this.width), Math.floor(this.height));
-        renderTarget.context.globalAlpha = 1;
+        renderTarget.context.restore();
     }
 }
 
 export class Text{
-    constructor(font, text, size, tint, outlineTint, outlineWidth){
+    constructor(font, text, size, tint, outlineWidth, outlineTint){
         if(text == undefined) text = "";
         if(size == undefined) size = 16;
-        if(tint == undefined) tint = makecol(255, 255, 255);
+        if(tint == undefined) tint = new Color(255, 255, 255);
+        if(outlineWidth == undefined) outlineWidth = 0;
+        if(outlineTint == undefined) outlineTint = new Color(0, 0, 0);
         this.cx = 0;
         this.cy = 0;
         this.angle = 0;
@@ -64,14 +72,14 @@ export class Text{
         this._size = size;
         this.tint = tint;
         this._text = text;
-        this.outline = outlineTint;
         this.outlineWidth = outlineWidth;
+        this.outlineTint = outlineTint;
         this._modifyMetrics();
     }
 
     _modifyMetrics() {
-        canvas.context.font = this.size + "px " + this.font.name;
-        let metrics = canvas.context.measureText(this.text);
+        JSP.renderTarget.context.font = this.size + "px " + this.font.name;
+        let metrics = JSP.renderTarget.context.measureText(this.text);
         this.width = Math.floor(metrics.width);
         this.height = Math.floor(Math.abs(metrics.actualBoundingBoxAscent -
             metrics.actualBoundingBoxDescent));
@@ -95,22 +103,17 @@ export class Text{
         this._modifyMetrics();
     }
 
-    draw(renderTarget, x, y){
-        renderTarget.context.save();
-        renderTarget.context.globalAlpha = this.alpha; 
-        renderTarget.context.translate(x, y);
-        renderTarget.context.rotate(RAD(this.angle));
-        renderTarget.context.translate(-this.cx, this.height - this.cy);
-        textout(renderTarget, this.font, this.text, 0, 0, this.size, 
-                    this.tint, this.outline, this.outlineWidth);
-        renderTarget.context.restore();
+    draw(renderTarget, x, y, camera){
+        renderTarget.drawText(this.font, this.text, x - camera.x, y - camera.y, this.size, 
+            this.tint, this.angle, this.cx, this.cy - this.height, this.alpha, 
+            this.outlineWidth, this.outlineTint);
     }
 }
 
 export class BitmapText extends Graphic{
     constructor(bitmap_font, text){
         if(text == undefined) text = "";
-        super(create_bitmap(1, 1));
+        super(new RenderTarget(1, 1));
         this.font_bitmap = bitmap_font.bitmap;
         this.font_data = bitmap_font.data;
         this.text = text;
@@ -147,7 +150,7 @@ export class BitmapText extends Graphic{
             this.wx = rect.x, this.wy = rect.y;
             this.width = rect.w, this.height = rect.h;
             this.cx = -rect.xoff, this.cy = -rect.yoff;
-            super.draw(renderTarget, sx, sy - minYOff);
+            super.draw(renderTarget, sx, sy - minYOff, new Camera(0, 0));
             sx += rect.xadv;
         }
         this.source = renderTarget;
@@ -161,22 +164,26 @@ export class BitmapText extends Graphic{
 }
 
 export class Backdrop extends Graphic{
-    constructor(source, repeatX, repeatY){
+    constructor(source, repeatX, repeatY, parallaxX, parallaxY){
         if(repeatX == undefined) repeatX = true;
         if(repeatY == undefined) repeatY = true;
+        if(parallaxX == undefined) parallaxX = 1;
+        if(parallaxY == undefined) parallaxY = 1;
         super(source);
         this.repeatX = repeatX;
         this.repeatY = repeatY;
+        this.parallaxX = parallaxX;
+        this.parallaxY = parallaxY;
     }
 
-    draw(renderTarget,x,y){
-        let xnumber = Math.ceil(SCREEN_W / this.width);
-        let ynumber = Math.ceil(SCREEN_H / this.height);
-        let shiftX = Math.floor(x % this.width);
-        let shiftY = Math.floor(y % this.height);
+    draw(renderTarget, x, y, camera){
+        let xnumber = Math.ceil(JSP.renderTarget.width / this.width);
+        let ynumber = Math.ceil(JSP.renderTarget.height / this.height);
+        let shiftX = Math.floor((x - camera.x * this.parallaxX) % this.width);
+        let shiftY = Math.floor((y - camera.y * this.parallaxY) % this.height);
         for(let dy=-1; dy<ynumber+2; dy++){
             for(let dx=-1; dx<xnumber+2; dx++){
-                super.draw(renderTarget, shiftX + dx*this.width, shiftY + dy*this.height);
+                super.draw(renderTarget, shiftX + dx*this.width, shiftY + dy*this.height, new Camera(0 ,0));
             }
         }
     }
@@ -195,9 +202,9 @@ export class IndexedGraphic extends Graphic{
         this.wy = Math.floor(this.index / gx) * this.height;
     }
 
-    draw(renderTarget,x,y){
+    draw(renderTarget, x, y, camera){
         this._transformIndexToWindow();
-        super.draw(renderTarget,x,y);
+        super.draw(renderTarget,x,y,camera);
     }
 }
 
@@ -227,14 +234,14 @@ export class Spritemap extends IndexedGraphic{
 
     playAnimation(name,forceRestart){
         if(forceRestart == undefined) forceRestart = false;
-        if(name != this.current || forceRestart){
+        if (name != this.current || this.animations[name].done || forceRestart){
             this.current = name;
             this.animations[name].index = 0;
             this.animations[name].done = false;
         }
     }
 
-    draw(renderTarget,x,y){
+    draw(renderTarget, x, y, camera){
         if(this.current in this.animations){
             let anim = this.animations[this.current];
             this.index = anim.indeces[Math.floor(anim.index)];
@@ -253,7 +260,7 @@ export class Spritemap extends IndexedGraphic{
                 }
             }
         }
-        super.draw(renderTarget,x,y);
+        super.draw(renderTarget,x,y,camera);
     }
 }
 
@@ -280,29 +287,32 @@ export class TileMap extends IndexedGraphic{
     }
 
     setTile(x,y,value){
-        if(x < 0 || y < 0 || x >= this.grid[0].length || x >= this.grid.length) return;
+        if(x < 0 || y < 0 || x >= this.grid[0].length || y >= this.grid.length) return;
         this.grid[y][x] = value;
     }
 
     clearTile(x,y){
-        if (x < 0 || y < 0 || x >= this.grid[0].length || x >= this.grid.length) return;
+        if (x < 0 || y < 0 || x >= this.grid[0].length || y >= this.grid.length) return;
         this.grid[y][x] = -1;
     }
 
-    draw(renderTarget,x,y){
+    draw(renderTarget, x, y, camera){
         let twidth = this.width * this.scaleX;
         let theight = this.height * this.scaleY;
-        let shown_x = Math.max(0, Math.floor(-x / twidth));
-        let shown_y = Math.max(0, Math.floor(-y / theight));
-        let shown_width = Math.min(this.grid[0].length - shown_x, Math.ceil(SCREEN_W / twidth) + 2);
-        let shown_height = Math.min(this.grid.length - shown_y, Math.ceil(SCREEN_H / theight) + 2);
-        for (let gy = -1; gy < shown_height; gy++) {
-            for (let gx = -1; gx < shown_width; gx++) {
-                let tx = Math.max(0, shown_x + gx);
-                let ty = Math.max(0, shown_y + gy);
+        let shown_x = Math.max(0, Math.floor(-(x - camera.x) / twidth));
+        let shown_y = Math.max(0, Math.floor(-(y - camera.y) / theight));
+        let shown_width = Math.min(this.grid[0].length - shown_x, Math.ceil(JSP.renderTarget.width / twidth));
+        let shown_height = Math.min(this.grid.length - shown_y, Math.ceil(JSP.renderTarget.height / theight));
+        for (let gy = -1; gy < shown_height + 1; gy++) {
+            for (let gx = -1; gx < shown_width + 1; gx++) {
+                let tx = shown_x + gx;
+                let ty = shown_y + gy;
+                if(tx < 0 || ty < 0 || ty >= this.grid.length || tx >= this.grid[ty].length){
+                    continue;
+                }
                 this.index = this.grid[ty][tx];
                 if(this.index >= 0){
-                    super.draw(renderTarget, x + tx * twidth, y + ty * theight);
+                    super.draw(renderTarget, x + tx * twidth, y + ty * theight, camera);
                 }
             }
         }
@@ -328,14 +338,13 @@ export class AnimTileMap extends TileMap{
         if (!(value in this.animations)) {
             this.animations[value] = {
                 index: 0,
-                done: false,
                 indeces: indeces,
                 fps: fps
             }
         }
     }
 
-    draw(renderTarget,x,y){
+    draw(renderTarget, x, y, camera){
         for(let value in this.animations){
             let anim = this.animations[value];
             anim.index += anim.fps / 60;
@@ -344,15 +353,18 @@ export class AnimTileMap extends TileMap{
 
         let twidth = this.width * this.scaleX;
         let theight = this.height * this.scaleY;
-        let shown_x = Math.max(0, Math.floor(-x / twidth));
-        let shown_y = Math.max(0, Math.floor(-y / theight));
-        let shown_width = Math.min(this.grid[0].length - shown_x, Math.ceil(SCREEN_W / twidth) + 2);
-        let shown_height = Math.min(this.grid.length - shown_y, Math.ceil(SCREEN_H / theight) + 2);
+        let shown_x = Math.max(0, Math.floor(-(x - camera.x) / twidth));
+        let shown_y = Math.max(0, Math.floor(-(y - camera.y) / theight));
+        let shown_width = Math.min(this.grid[0].length - shown_x, Math.ceil(JSP.renderTarget.width / twidth));
+        let shown_height = Math.min(this.grid.length - shown_y, Math.ceil(JSP.renderTarget.height / theight));
 
-        for (let gy = -1; gy < shown_height; gy++) {
-            for (let gx = -1; gx < shown_width; gx++) {
-                let tx = Math.max(0, shown_x + gx);
-                let ty = Math.max(0, shown_y + gy);
+        for (let gy = -1; gy < shown_height + 1; gy++) {
+            for (let gx = -1; gx < shown_width + 1; gx++) {
+                let tx = shown_x + gx;
+                let ty = shown_y + gy;
+                if (tx < 0 || ty < 0 || ty >= this.grid.length || tx >= this.grid[ty].length) {
+                    continue;
+                }
                 this._temp_grid[ty][tx] = this.grid[ty][tx];
                 if (this.grid[ty][tx] >= 0 && this.grid[ty][tx] in this.animations) {
                     let anim = this.animations[this.grid[ty][tx]];
@@ -360,13 +372,52 @@ export class AnimTileMap extends TileMap{
                 }
             }
         }
-        super.draw(renderTarget, x, y);
-        for (let gy = -1; gy < shown_height; gy++) {
-            for (let gx = -1; gx < shown_width; gx++) {
-                let tx = Math.max(0, shown_x + gx);
-                let ty = Math.max(0, shown_y + gy);
+        super.draw(renderTarget, x, y, camera);
+        for (let gy = -1; gy < shown_height + 1; gy++) {
+            for (let gx = -1; gx < shown_width + 1; gx++) {
+                let tx = shown_x + gx;
+                let ty = shown_y + gy;
+                if (tx < 0 || ty < 0 || ty >= this.grid.length || tx >= this.grid[ty].length) {
+                    continue;
+                }
                 this.grid[ty][tx] = this._temp_grid[ty][tx];
             }
+        }
+    }
+}
+
+export class GraphicList{
+    constructor(){
+        this.graphics = [];
+    }
+
+    add(g){
+        if(this.graphics.indexOf(g) < 0){
+            this.graphics.push(g);
+        }
+       
+    }
+
+    remove(g){
+        let index = this.graphics.indexOf(g);
+        if(index >= 0){
+            this.removeAt(index);
+        }
+    }
+
+    removeAt(index){
+        if(index >= 0 && index < this.graphics.length){
+            this.graphics.splice(index, 1);
+        }
+    }
+
+    count(){
+        return this.graphics.length;
+    }
+
+    draw(renderTarget, x, y, camera) {
+        for(let g of this.graphics){
+            g.draw(renderTarget, x, y, camera);
         }
     }
 }

@@ -46,6 +46,8 @@ export default class Entity{
     }
 
     collidePoint(x, y, px, py){
+        if (!this.collidable || this.mask == null) return false;
+
         this.mask._move(x, y);
         let result = this.mask._collidePoint(px, py);
         this.mask._move(0, 0);
@@ -53,6 +55,8 @@ export default class Entity{
     }
 
     collideRect(x, y, rx, ry, rwidth, rheight){
+        if (!this.collidable || this.mask == null) return false;
+
         let other = new Hitbox(rx, ry, rwidth, rheight);
         this.mask._move(x, y);
         let result = this.mask.checkCollide(other);
@@ -61,7 +65,9 @@ export default class Entity{
     }
 
     collideWith(e, x, y){
-        if(!e.collidable) return null;
+        if (!this.collidable || this.mask == null) return null;
+        if (!e.collidable || e.mask == null) return null;
+
         this.mask._move(x, y);
         let result = this.mask.checkCollide(e.mask);
         this.mask._move(0, 0);
@@ -69,10 +75,12 @@ export default class Entity{
     }
 
     collideType(type, x, y){
+        if (!this.collidable || this.mask == null) return [];
+
         let result = [];
         let entities = this.world.getType(type);
         for (let e of entities) {
-            if (!e.collidable) continue;
+            if (!e.collidable || e.mask == null) continue;
             this.mask._move(x, y);
             e.mask._move(e.x, e.y);
             if (this.mask.checkCollide(e.mask)) {
@@ -85,9 +93,11 @@ export default class Entity{
     }
 
     collideTypeFirst(type, x, y) {
+        if (!this.collidable || this.mask == null) return null;
+
         let entities = this.world.getType(type);
         for (let e of entities) {
-            if (!e.collidable) continue;
+            if (!e.collidable || e.mask == null) continue;
             this.mask._move(x, y);
             e.mask._move(e.x, e.y);
             if (this.mask.checkCollide(e.mask)) {
@@ -102,10 +112,12 @@ export default class Entity{
     }
 
     collideClass(type, x, y) {
+        if (!this.collidable || this.mask == null) return [];
+
         let result = [];
         let entities = this.world.getClass(type);
         for (let e of entities) {
-            if (!e.collidable) continue;
+            if (!e.collidable || e.mask == null) continue;
             this.mask._move(x, y);
             e.mask._move(e.x, e.y);
             if (this.mask.checkCollide(e.mask)) {
@@ -118,9 +130,11 @@ export default class Entity{
     }
 
     collideClassFirst(type, x, y) {
+        if (!this.collidable || this.mask == null) return null;
+
         let entities = this.world.getClass(type);
         for (let e of entities) {
-            if (!e.collidable) continue;
+            if (!e.collidable || e.mask == null) continue;
             this.mask._move(x, y);
             e.mask._move(e.x, e.y);
             if (this.mask.checkCollide(e.mask)) {
@@ -135,11 +149,10 @@ export default class Entity{
     }
 
     draw(){
-        if(this.graphic == null) return;
-        
-        let currentTarget = canvas;
+        if(!this.visible || this.graphic == null) return;
+
+        let currentTarget = JSP.renderTarget;
         if(this.render_target != null) currentTarget = this.render_target;
-        let camera = this.followCamera?1:0;
-        this.graphic.draw(currentTarget, this.x - camera * JSP.camera.x, this.y - camera * JSP.camera.y);
+        this.graphic.draw(currentTarget, this.x, this.y, JSP.camera);
     }
 }

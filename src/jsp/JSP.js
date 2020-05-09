@@ -1,3 +1,9 @@
+import Loader from "./loader.js";
+import { Camera, RenderTarget, Color } from "./rendering.js";
+import { logoBase64, fontBase64, bitmapFontBase64, bitmapFontXML } from "./utils.js";
+import { Input } from "./input.js";
+import Debug from "./debug.js";
+
 export default class JSP{
     static get world(){
         return this._currentWorld;
@@ -7,118 +13,197 @@ export default class JSP{
         this._nextWorld = w;
     }
 
-    static loadSFX(name, path){
-        name = "sfx_" + name;
-        if (name in this._cache) {
-            return;
-        }
-        this._cache[name] = load_sample(path);
+    static get delta(){
+        return Date.now() - this._prevTick;
     }
 
-    static loadGFX(name, path) {
-        name = "gfx_" + name;
-        if (name in this._cache) {
-            return;
-        }
-        this._cache[name] = load_bmp(path);
+    static _initLoader(){
+        this.loader = new Loader();
     }
 
-    static loadFNT(name, path) {
-        name = "fnt_" + name;
-        if (name in this._cache) {
-            return;
+    static _initMath(){
+        Math.RAD = function(d) { 
+            return -d * Math.PI / 180.0; 
         }
-        if(path.endsWith("ttf")){
-            this._cache[name] = load_font(path);
+
+        
+        Math.DEG = function(r) { 
+            return -r * 180.0 / Math.PI; 
         }
-        else{
-            this._cache[name] = load_bitmap_font(path);
+
+        Math.length = function(x, y) {
+            return Math.sqrt(x * x - y * y);
+        }
+
+        Math.distance = function(x1, y1, x2, y2) {
+            return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        }
+
+        Math.distance2 = function(x1, y1, x2, y2) {
+            return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+        }
+
+        Math.lineDist = function(ex1, ey1, ex2, ey2, x, y) {
+            var px = ex2 - ex1;
+            var py = ey2 - ey1;
+            var u = ((x - ex1) * px + (y - ey1) * py) / (px * px + py * py);
+            if (u > 1)
+                u = 1;
+            else if (u < 0)
+                u = 0;
+
+            var dx = ex1 + u * px - x;
+            var dy = ey1 + u * py - y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        Math.randint = function(value){
+            return Math.floor(65536 * Math.random()) % value;
+        }
+
+        Math.shuffle = function(array) {
+            for (let i = 0; i < array.length; i++) {
+                let i2 = rand() % array.length;
+                let temp = array[i];
+                array[i] = array[i2];
+                array[i2] = temp;
+            }
+        }
+
+        Math.lerp = function(from, to, progress){
+            return from + (to - from) * progress;
+        }
+        
+        Math.dot = function(x1, y1, x2, y2) {
+            return x1 * x2 + y1 * y2;
+        }
+
+        Math.sgn = function(a) {
+            return a < 0 ? -1 : (a > 0 ? 1 : 0);
+        }
+
+        Math.scale = function(value, min, max, min2, max2) {
+            return min2 + ((value - min) / (max - min)) * (max2 - min2);
+        }
+
+        Math.clamp = function(value, min, max) {
+            if (max > min) {
+                if (value < min) return min;
+                else if (value > max) return max;
+                else return value;
+            } else {
+                if (value < max) return max;
+                else if (value > min) return min;
+                else return value;
+            }
+        }
+
+        Math.angle = function (x1, y1, x2, y2) {
+            var a = DEG(Math.atan2(y2 - y1, x2 - x1));
+            return a < 0 ? a + 360 : a;
+        }
+
+        Math.angleDiff = function(a, b) {
+            var diff = b - a;
+            diff /= 360;
+            diff = (diff - floor(diff)) * 360
+            if (diff > 180) { diff -= 360; }
+            return diff;
         }
     }
 
-    static loadJSON(name, path){
-        name = "json_" + name;
-        if (name in this._cache) {
-            return;
-        }
-        this._cache[name] = load_json(path);
+    static _initGraphics(canvasID, width, height, scale, smoothing, highDensity){
+        this._smoothing = smoothing;
+        this._highDensity = highDensity;
+
+        this.backcolor = new Color(0, 0, 0);
+        this.camera = new Camera(0, 0);
+        this.renderTarget = new RenderTarget(width, height);
+        this.renderTarget.canvas.id = canvasID;
+        this.renderTarget.canvas.style.width = width * scale + "px";
+        this.renderTarget.canvas.style.height = height * scale + "px";
+        document.body.append(this.renderTarget.canvas);
     }
 
-    static getSFX(name){
-        name = "sfx_" + name;
-        if (!name in this._cache) {
-            return null;
+    static _initDefaultAssets(){
+        this.loader._cache["logo"] = this.loader._loadBitmap("data:image/png;base64," + logoBase64);
+        this.loader._cache["font"] = this.loader._loadFont("font", "data:application/font-woff;base64," + fontBase64);
+        this.loader._cache["bmpfont"] = {
+            bitmap: this.loader._loadBitmap("data:image/png;base64," + bitmapFontBase64),
+            data: {},
+            ready: true,
+            type: "bmpfnt"
         }
-        return this._cache[name];
+        let xmlFile = new DOMParser().parseFromString(bitmapFontXML, "text/xml")
+        for (let c of xmlFile.getElementsByTagName("char")) {
+            this.loader._cache["bmpfont"].data[parseInt(c.getAttribute('id'))] = {
+                x: parseInt(c.getAttribute('x')),
+                y: parseInt(c.getAttribute('y')),
+                w: parseInt(c.getAttribute('width')),
+                h: parseInt(c.getAttribute('height')),
+                xoff: parseInt(c.getAttribute('xoffset')),
+                yoff: parseInt(c.getAttribute('yoffset')),
+                xadv: parseInt(c.getAttribute('xadvance'))
+            };
+        };
     }
 
-    static getGFX(name) {
-        name = "gfx_" + name;
-        if (!name in this._cache) {
-            return null;
+    static _initDebug(debugID){
+        this.debug = new Debug();
+        if (debugID.length > 0) {
+            this.debug.element.id = debugID;
+            document.body.append(this.debug.element);
         }
-        return this._cache[name];
     }
 
-    static getFNT(name) {
-        name = "fnt_" + name;
-        if (!name in this._cache) {
-            return null;
-        }
-        return this._cache[name];
+    static _initInput(canvas, canvasScale){
+        this.input = new Input(canvas, canvasScale);
     }
 
-    static getJSON(name) {
-        name = "json_" + name;
-        if (!name in this._cache) {
-            return null;
-        }
-        return this._cache[name];
+    static _initSound(){
+        
     }
 
-    static init(width, height, scale, debug){
+    static init(canvasID, width, height, fps, scale, debugID, smoothing, highDensity){
+        if(fps==undefined) fps = 60;
         if(scale==undefined) scale = 1;
-        if(debug==undefined) debug = false;
+        if(debugID==undefined) debugID = "";
+        if(smoothing==undefined) smoothing = false;
+        if(highDensity==undefined) highDensity = false;
+
+        if (this.loader) {
+            JSP.debug.log("JSP is already initialized!");
+            return;
+        }
 
         this._nextWorld = null;
         this._currentWorld = null;
-        this._cache = {};
-        this.backcolor = makecol(0, 0, 0);
-        this.camera = {x:0, y:0};
-        document.getElementById("game_canvas").style.width = width * scale + "px";
-        document.getElementById("game_canvas").style.height = height * scale + "px";
-        if(debug){
-            enable_debug('debug');
-        }
-        else{
-            document.body.style.padding = "0px";
-            document.body.style.margin = "0px";
-            document.getElementById("debug").style.display = "none";
-            let canvas = document.getElementById("game_canvas");
-            canvas.style.border = "0px";
-            canvas.style.margin = "0px";
-            canvas.style.padding = "0px";
-            canvas.style.borderRadius = "0px";
-            canvas.style.boxShadow = "none";
-        }
-        allegro_init_all("game_canvas", width, height, false);
+        this._fps = fps;
+
+        this._initLoader();
+        this._initMath();
+        this._initGraphics(canvasID, width, height, scale, smoothing, highDensity);
+        this._initDebug(debugID);
+        this._initInput(this.renderTarget.canvas, scale);
+        this._initSound();
+        this._initDefaultAssets();
+        this.debug.enable = debugID.length > 0;
+
+        this._gameLoopID = window.setInterval(function(){
+            this._update();
+            this.renderTarget.clearTarget(this.backcolor);
+            this._draw();
+        }.bind(this), 1000 / this._fps);
+
+        this._prevTick = Date.now();
+        window.focus();
     }
 
-    static start(callback){
-        ready(function () {
-            if(callback) callback();
-            loop(function () {
-                clear_to_color(canvas, JSP.backcolor);
-                JSP._update();
-                JSP._draw();
-            }, BPS_TO_TIMER(60));
-        });
+    static start(main){
+        window.addEventListener("load", main);
     }
 
     static _update(){
-        if(this._currentWorld != null){
-            this._currentWorld.update();
-        }
         if(this._nextWorld != null){
             if(this._currentWorld != null){
                 this._currentWorld.end();
@@ -127,6 +212,11 @@ export default class JSP{
             this._nextWorld = null;
             this._currentWorld.begin();
         }
+        if (this._currentWorld != null) {
+            this._currentWorld.update();
+        }
+        this.input._update();
+        this._prevTick = Date.now();
     }
 
     static _draw(){

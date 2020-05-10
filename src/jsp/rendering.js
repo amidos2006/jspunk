@@ -1,6 +1,19 @@
 import JSP from "./JSP.js";
 import {Hitbox} from "./hitbox.js";
 
+export const BlendModes = {
+    DEFAULT: "source-over",
+
+    SOURCE_OVER: "source-over", SOURCE_IN: "source-in", SOURCE_OUT: "source-out", SOURCE_ATOP: "source-atop",
+    DESTINATION_OVER: "destination-over", DESTINATION_IN: "destination-in", 
+    DESTINATION_OUT: "destination-out", DESTINATION_ATOP: "destination-atop",
+    LIGHTER: "lighter", COPY: "copy", XOR: "xor", MULTIPLY: "multiply",
+    SCREEN: "screen", OVERLAY: "overlay", DARKEN: "darken", LIGHTEN: "lighten",
+    COLOR_DODGE: "color-dodge", COLOR_BURN: "color-burn", HARD_LIGHT: "hard-light", 
+    SOFT_LIGHT: "soft-light", DIFFERENCE: "difference", EXCLUSION: "exclusion", 
+    HUE: "hue", SATURATION: "saturation", COLOR: "color", LUMINOSITY: "luminosity"
+};
+
 export class Color {
     static get WHITE(){
         if(this._white == undefined) this._white = new Color(255, 255, 255);
@@ -99,11 +112,10 @@ export class RenderTarget{
     }
 
     clearTarget(col){
-        this.context.clearRect(0, 0, this.width, this.height);
-        if(col != undefined){
-            this.context.fillStyle = 'rgba(' + col.r + ',' + col.g + ',' + col.b + ',' + col.a + ')';
-            this.context.fillRect(0, 0, this.width, this.height);
+        if (col != undefined) {
+            this.canvas.style.backgroundColor = 'rgb(' + col.r + ',' + col.g + ',' + col.b + ')';
         }
+        this.context.clearRect(0, 0, this.width, this.height);
     }
     
     drawTexture(texture, dx, dy, angle, scalex, scaley, alpha, originx, originy, sx, sy, width, height) {
@@ -142,11 +154,11 @@ export class RenderTarget{
         if(outlineColor == undefined) outlineColor = Color.BLACK;
 
         this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
         this.context.globalAlpha = alpha;
         this.context.translate(Math.floor(x), Math.floor(y));
         this.context.rotate(Math.RAD(angle));
         this.context.translate(-Math.floor(originx), -Math.floor(originy));
-
         this.context.font = size.toFixed() + 'px ' + font.name;
         this.context.textAlign = "left";
         this.context.fillStyle = 'rgba(' + color.r + ',' +color.g + ',' + color.b + ',' + color.a + ')';
@@ -156,40 +168,51 @@ export class RenderTarget{
             this.context.strokeStyle = 'rgba(' + outlineColor.r + ',' + outlineColor.g + ',' + outlineColor.b + ',' + outlineColor.a + ')';
             this.context.strokeText(text, 0, 0);
         }
-        
         this.context.restore();
     }
 
     drawRect(x,y,width,height,color,thickness) {
         if(color == undefined) color = Color.BLACK;
         if(thickness == undefined) thickness = 1;
-        this.context.lineWidth = thickness;
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
+        this.context.lineWidth = Math.floor(thickness);
         this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
-        this.context.strokeRect(x, y, width, height);
+        this.context.strokeRect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(height));
+        this.context.restore();
     }
 
     drawFillRect(x,y,width,height,color){
         if(color == undefined) color = Color.WHITE;
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
         this.context.fillStyle = 'rgba(' + color.r + ',' +color.g + ',' + color.b + ',' + color.a + ')';
-        this.context.fillRect(x, y, width, height);
+        this.context.fillRect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(height));
+        this.context.restore();
     }
 
     drawArc(x, y, radius, angle1, angle2, color, thickness){
         if(color == undefined) color = Color.BLACK;
         if(thickness == undefined) thickness = 1;
-        this.context.lineWidth = thickness;
+        this.context.lineWidth = Math.floor(thickness);
         this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
-        bitmap.context.beginPath();
-        bitmap.context.arc(x, y, radius, Math.RAD(angle1), Math.RAD(angle2));
-        bitmap.context.stroke();
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
+        this.context.beginPath();
+        this.context.arc(Math.floor(x), Math.floor(y), Math.floor(radius), Math.RAD(angle1), Math.RAD(angle2));
+        this.context.stroke();
+        this.context.restore();
     }
 
     drawFillArc(x, y, radius, angle1, angle2, color){
         if (color == undefined) color = Color.WHITE;
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
         this.context.fillStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
-        bitmap.context.beginPath();
-        bitmap.context.arc(x, y, radius, Math.RAD(angle1), Math.RAD(angle2));
-        bitmap.context.fill();
+        this.context.beginPath();
+        this.context.arc(Math.floor(x), Math.floor(y), Math.floor(radius), Math.RAD(angle1), Math.RAD(angle2));
+        this.context.fill();
+        this.context.restore();
     }
 
     drawCircle(x,y,radius,color,thickness){
@@ -203,12 +226,15 @@ export class RenderTarget{
     drawLine(x1,y1,x2,y2,color,thickness){
         if(color == undefined) color = Color.BLACK;
         if(thickness == undefined) thickness = 1;
-        this.context.lineWidth = thickness;
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
+        this.context.lineWidth = Math.floor(thickness);
         this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
         this.context.beginPath();
-        this.context.moveTo(x1, y1);
-        this.context.lineTo(x2, y2);
+        this.context.moveTo(Math.floor(x1), Math.floor(y1));
+        this.context.lineTo(Math.floor(x2), Math.floor(y2));
         this.context.stroke();
+        this.context.restore();
     } 
 
     drawHLine(x1,x2,y,color,thickness){
@@ -222,27 +248,33 @@ export class RenderTarget{
     drawPolygon(points, color, thickness) {
         if (color == undefined) color = Color.BLACK;
         if (thickness == undefined) thickness = 1;
-        this.context.lineWidth = thickness;
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
+        this.context.lineWidth = Math.floor(thickness);
         this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
         this.context.beginPath();
         for (let i = 0; i < points; i++) {
-            if (i > 0) this.context.lineTo(points[i].x, points[i].y);
-            else this.context.moveTo(points[i].x, points[i].y);
+            if (i > 0) this.context.lineTo(Math.floor(points[i].x), Math.floor(points[i].y));
+            else this.context.moveTo(Math.floor(points[i].x), Math.floor(points[i].y));
         }
         this.context.closePath();
         this.context.stroke();
+        this.context.restore();
     }
     
     drawFillPolygon(points, color){
         if (color == undefined) color = Color.WHITE;
+        this.context.save();
+        this.context.globalCompositeOperation = this.blendMode;
         this.context.fillStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
         this.context.beginPath();
         for (let i = 0; i < points; i++) {
-            if (i > 0) this.context.lineTo(points[i].x, points[i].y);
-            else this.context.moveTo(points[i].x, points[i].y);
+            if (i > 0) this.context.lineTo(Math.floor(points[i].x), Math.floor(points[i].y));
+            else this.context.moveTo(Math.floor(points[i].x), Math.floor(points[i].y));
         }
         this.context.closePath();
         this.context.fill();
+        this.context.restore();
     }
 
     drawTriangle(x1,y1,x2,y2,x3,y3,color,thickness){

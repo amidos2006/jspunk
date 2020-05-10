@@ -44,7 +44,7 @@ export default class Loader{
     }
 
     getFile(name){
-        if (name in this._cache && !this._loadingInProgress){
+        if (name in this._cache && this._cache[name].ready){
             return this._cache[name];
         }
         return null;
@@ -252,6 +252,6 @@ export default class Loader{
         s.type = "text/css";
         document.head.appendChild(s);
         s.textContent = "@font-face { font-family: " + fontname + "; src:url('" + filename + "');}";
-        return { element: s, file: filename, name: fontname, type: "fnt" };
+        return { element: s, file: filename, name: fontname, type: "fnt", ready: true };
     }
 }

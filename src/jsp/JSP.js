@@ -186,7 +186,6 @@ export default class JSP{
         this._initDebug(debugID);
         this._initInput(this.renderTarget.canvas, scale);
         this._initSound();
-        this._initDefaultAssets();
         this.debug.enable = debugID.length > 0;
 
         this._gameLoopID = window.setInterval(function(){
@@ -200,7 +199,15 @@ export default class JSP{
     }
 
     static start(main){
-        window.addEventListener("load", main);
+        let debugEnable = this.debug.enable;
+        this.debug.enable = false;
+        window.addEventListener("load", function(){
+            this._initDefaultAssets();
+            this.loader.startLoading(function () {
+                this.debug.enable = debugEnable;
+                if(main) main();
+            }.bind(this))
+        }.bind(this));
     }
 
     static _update(){

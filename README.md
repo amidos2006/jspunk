@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <b>Current Framework Version: 0.4.0</b>
+  <b>Current Framework Version: 0.4.2</b>
 </p>
 
 Javascript port for Flashpunk version. In the current version, it is build with pieces from [allegrojs](http://allegrojs.net/) but that uses [native canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) but hopefull in the future I can replace it with [WebGL](https://webgl2fundamentals.org/) with shaders and [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API).
@@ -24,6 +24,7 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 - Camera with anchor, rotationg, and zooming
 - Smoothing and HighDef resolution for the renderTargets
 - Handling Inputs: Keyboard and Mouse
+- Sfx class to handle sounds
 
 ## Missing Features
 - Pixel Mask

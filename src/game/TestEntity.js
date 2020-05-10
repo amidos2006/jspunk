@@ -1,7 +1,6 @@
 import Entity from "../jsp/entity.js"
 import JSP from "../jsp/JSP.js"
 import { Text } from "../jsp/graphics.js";
-import { MouseKeys } from "../jsp/input.js";
 
 export default class TestEntity extends Entity{
     constructor(){
@@ -15,8 +14,5 @@ export default class TestEntity extends Entity{
         super.update();
         
         this.graphic.angle += 2;
-        if(JSP.input.mousePressed(MouseKeys.LEFT)){
-            JSP.debug.log(JSP.input.worldX() + " " + JSP.input.worldY());
-        }
     }
 }

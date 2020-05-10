@@ -13,7 +13,7 @@
 Javascript port for Flashpunk version. In the current version, it is build with pieces from [allegrojs](http://allegrojs.net/) but that uses [native canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) but hopefull in the future I can replace it with [WebGL](https://webgl2fundamentals.org/) with shaders and [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API).
 
 ## Features
-- RenderTargets with blendModes
+- RenderTargets with blendModes and native object drawing
 - Entity, World management
 - Graphis classes: Graphic, IndexedGraphic, Spritemap, Backdrop, Text, BitmapText, GraphicList, Tilemap, and AnimTileMap classes
 - Tinting using blend mode
@@ -32,8 +32,7 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 - MaskList
 - Sfx class
 - ParticleEmitter as Graphic class
-- Mouse have window position and world position
+- Mouse have world position
 - Gamepad support
-- RenderTarget native drawing objects
 - ~~(Maybe) automatically bind callback functions to its parent class~~
 - ~~(Maybe) all child classes have access to their parent class~~

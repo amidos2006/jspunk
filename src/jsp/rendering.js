@@ -2,6 +2,31 @@ import JSP from "./JSP.js";
 import {Hitbox} from "./hitbox.js";
 
 export class Color {
+    static get WHITE(){
+        if(this._white == undefined) this._white = new Color(255, 255, 255);
+        return this._white;
+    }
+
+    static get BLACK(){
+        if (this._black == undefined) this._black = new Color(0, 0, 0);
+        return this._black;
+    }
+
+    static get RED(){
+        if(this._red == undefined) this._red = new Color(255, 0, 0);
+        return this._red;
+    }
+
+    static get GREEN(){
+        if(this._green == undefined) this._green = new Color(0, 255, 0);
+        return this._green;
+    }
+
+    static get BLUE(){
+        if(this._blue == undefined) this._blue = new Color(0, 0, 255);
+        return this._blue;
+    }
+
     constructor(r, g, b, a) {
         if (g == undefined && b == undefined) g = b = r;
         if (a == undefined) a = 255;
@@ -73,8 +98,6 @@ export class RenderTarget{
         }
     }
 
-    
-
     clearTarget(col){
         this.context.clearRect(0, 0, this.width, this.height);
         if(col != undefined){
@@ -110,13 +133,13 @@ export class RenderTarget{
         if(x == undefined) x = 0;
         if(y == undefined) y = 0;
         if(size == undefined) size = 16;
-        if(color == undefined) color = new Color(255, 255, 255);
+        if(color == undefined) color = Color.WHITE;
         if(angle == undefined) angle = 0;
         if(originx == undefined) originy = 0;
         if(originy == undefined) originy = 0;
         if(alpha == undefined) alpha = 1;
         if(outlineWidth == undefined) outlineWidth = 0;
-        if(outlineColor == undefined) outlineColor = new Color(0, 0, 0);
+        if(outlineColor == undefined) outlineColor = Color.BLACK;
 
         this.context.save();
         this.context.globalAlpha = alpha;
@@ -137,23 +160,96 @@ export class RenderTarget{
         this.context.restore();
     }
 
-    drawRect() {
-
+    drawRect(x,y,width,height,color,thickness) {
+        if(color == undefined) color = Color.BLACK;
+        if(thickness == undefined) thickness = 1;
+        this.context.lineWidth = thickness;
+        this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
+        this.context.strokeRect(x, y, width, height);
     }
 
-    drawFillRect(){
-
+    drawFillRect(x,y,width,height,color){
+        if(color == undefined) color = Color.WHITE;
+        this.context.fillStyle = 'rgba(' + color.r + ',' +color.g + ',' + color.b + ',' + color.a + ')';
+        this.context.fillRect(x, y, width, height);
     }
 
-    drawCircle(){
-
+    drawArc(x, y, radius, angle1, angle2, color, thickness){
+        if(color == undefined) color = Color.BLACK;
+        if(thickness == undefined) thickness = 1;
+        this.context.lineWidth = thickness;
+        this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
+        bitmap.context.beginPath();
+        bitmap.context.arc(x, y, radius, Math.RAD(angle1), Math.RAD(angle2));
+        bitmap.context.stroke();
     }
 
-    drawFillCircle(){
-
+    drawFillArc(x, y, radius, angle1, angle2, color){
+        if (color == undefined) color = Color.WHITE;
+        this.context.fillStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
+        bitmap.context.beginPath();
+        bitmap.context.arc(x, y, radius, Math.RAD(angle1), Math.RAD(angle2));
+        bitmap.context.fill();
     }
 
-    drawLine(){
+    drawCircle(x,y,radius,color,thickness){
+        this.drawArc(x, y, radius, 0, 360, color, thickness);
+    }
 
+    drawFillCircle(x,y,radius,color){
+        this.drawFillArc(x, y, radius, 0, 360, color);
+    }
+
+    drawLine(x1,y1,x2,y2,color,thickness){
+        if(color == undefined) color = Color.BLACK;
+        if(thickness == undefined) thickness = 1;
+        this.context.lineWidth = thickness;
+        this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
+        this.context.beginPath();
+        this.context.moveTo(x1, y1);
+        this.context.lineTo(x2, y2);
+        this.context.stroke();
+    } 
+
+    drawHLine(x1,x2,y,color,thickness){
+        this.drawLine(x1, y, x2, y, color, thickness);
+    }
+
+    drawVLine(x,y1,y2,color,thickness){
+        this.drawLine(x, y1, x, y2, color, thickness);
+    }
+
+    drawPolygon(points, color, thickness) {
+        if (color == undefined) color = Color.BLACK;
+        if (thickness == undefined) thickness = 1;
+        this.context.lineWidth = thickness;
+        this.context.strokeStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
+        this.context.beginPath();
+        for (let i = 0; i < points; i++) {
+            if (i > 0) this.context.lineTo(points[i].x, points[i].y);
+            else this.context.moveTo(points[i].x, points[i].y);
+        }
+        this.context.closePath();
+        this.context.stroke();
+    }
+    
+    drawFillPolygon(points, color){
+        if (color == undefined) color = Color.WHITE;
+        this.context.fillStyle = 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
+        this.context.beginPath();
+        for (let i = 0; i < points; i++) {
+            if (i > 0) this.context.lineTo(points[i].x, points[i].y);
+            else this.context.moveTo(points[i].x, points[i].y);
+        }
+        this.context.closePath();
+        this.context.fill();
+    }
+
+    drawTriangle(x1,y1,x2,y2,x3,y3,color,thickness){
+        this.drawPolygon([{x:x1, y:y1}, {x:x2, y:y2}, {x:x3, y:y3}], color, thickness);
+    }
+
+    drawFillTriangle(x1, y1, x2, y2, x3, y3, color) {
+        this.drawFillPolygon([{ x: x1, y: y1 }, { x: x2, y: y2 }, { x: x3, y: y3 }], color);
     }
 }

@@ -227,9 +227,8 @@ export default class Loader{
     _loadSample(filename){
         var audio = document.createElement('audio');
         audio.src = filename;
-        var sample = {element:audio,file:filename,volume:1.0,ready:false,type:"snd"};
-        _downloadables.push(sample);
-        _samples.push(sample);
+        var sample = {element:audio,file:filename,ready:false,type:"snd"};
+        this._downloadables.push(sample);
         JSP.debug.log("Loading sample " + filename + "...");
         audio.onloadeddata = function()
         {

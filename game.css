@@ -1,20 +1,12 @@
-body { /* this applies to the entire document */
-	font-family:'Roboto', sans-serif; /* Select font without serifs */
-	/* margin: 0px;
-	padding: 0px; */
-}
-
 canvas { /* this applies to our game area */
 	border:1px solid #888; /* set subtle gray border */
-	box-shadow:#888 0px 0px 32px; /* add a fancy shadow effect */
 	margin: 10px auto; /* center horizontally and add a bit of margin vertically */
 	display:block; /* display as a non-inline block */
 	border-radius:12px; /* makes the border round and sound */
 }
  
 #debug { /* this applies to debug box */
-	background-color:#f8fcff; /* change bg color to yellowish */
-	box-shadow:#888 0px 0px 32px; /* fancy shadow fx */
+	border:1px solid #888; /* set subtle gray border */
 	margin: 10px auto; /* center horizontally and space vertically */
 	border-radius:12px; /* makes the border round and sound */
 }

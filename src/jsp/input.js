@@ -55,12 +55,12 @@ export class Input {
     }
 
     _initMouse(canvas, canvasScale) {
-        document.addEventListener('mouseup', function(e) {
+        canvas.addEventListener('mouseup', function(e) {
             this._mouseDown[e.which - 1] = false;
             this._mouseReleased[e.which - 1] = true;
             e.preventDefault();
         }.bind(this));
-        document.addEventListener('mousedown', function(e) {
+        canvas.addEventListener('mousedown', function(e) {
             this._mouseDown[e.which - 1] = true;
             this._mousePressed[e.which - 1] = true;
             e.preventDefault();

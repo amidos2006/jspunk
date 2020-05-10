@@ -24,16 +24,15 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 - Camera with anchor, rotationg, and zooming
 - Smoothing and HighDef resolution for the renderTargets
 - Handling Inputs: Keyboard and Mouse
+- Mouse have world position
 - Sfx class to handle sounds
+- JSPunk Splash Screens similar to FlashPunk
 
 ## Missing Features
 - Pixel Mask
-- JSPunk Splash Screens similar to FlashPunk
-- Graphics need to take in account the Camera with rotation and scaling
+- Camera with pivot and rotation and scaling
 - MaskList
-- Sfx class
-- ParticleEmitter as Graphic class
-- Mouse have world position
+- ParticleEmitter
 - Gamepad support
 - ~~(Maybe) automatically bind callback functions to its parent class~~
 - ~~(Maybe) all child classes have access to their parent class~~

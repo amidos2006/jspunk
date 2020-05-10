@@ -110,6 +110,32 @@ export default class JSP{
             if (diff > 180) { diff -= 360; }
             return diff;
         }
+
+        Math.matMult= function(left, right){
+            let result = [];
+            for(let y=0; y<3; y++){
+                for(let x=0; x<3; x++){
+                    let value = 0;
+                    for(let i=0; i<3; i++){
+                        value += left[y*3 + i] * right[i*3 + x];
+                    }
+                    result.push(value);
+                }
+            }
+            return result;
+        }
+
+        Math.vecMult = function(mat, vec){
+            let result = [];
+            for (let y = 0; y < 3; y++) {
+                let value = 0;
+                for (let i = 0; i < 3; i++) {
+                    value += mat[y * 3 + i] * vec[i];
+                }
+                result.push(value);
+            }
+            return result;
+        }
     }
 
     static _initGraphics(canvasID, width, height, scale, smoothing, highDensity){

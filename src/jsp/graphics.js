@@ -1,6 +1,16 @@
 import { Camera, RenderTarget, Color } from "./rendering.js";
 import JSP from "./JSP.js";
 
+function applyCameraTransformation(renderTarget, camera){
+    renderTarget.context.translate(-Math.floor(camera.x), -Math.floor(camera.y));
+    renderTarget.context.translate(Math.floor(camera.anchorX * renderTarget.width),
+        Math.floor(camera.anchorY * renderTarget.height));
+    renderTarget.context.rotate(Math.RAD(camera.angle));
+    renderTarget.context.scale(camera.zoom, camera.zoom);
+    renderTarget.context.translate(-Math.floor(camera.anchorX * renderTarget.width),
+        -Math.floor(camera.anchorY * renderTarget.height));
+}
+
 export class Graphic{
     constructor(source,wx,wy,ww,wh){
         if(wx == undefined) wx=0;
@@ -45,11 +55,7 @@ export class Graphic{
     draw(renderTarget, x, y, camera){
         //need to check if in camera or not before drawing
         renderTarget.context.save();
-        renderTarget.context.translate(-Math.floor(camera.x), -Math.floor(camera.y));
-        renderTarget.context.rotate(Math.RAD(camera.angle));
-        renderTarget.context.scale(camera.zoom, camera.zoom);
-        renderTarget.context.translate(-Math.floor(camera.anchorX * renderTarget.width), 
-            -Math.floor(camera.anchorY * renderTarget.height));
+        applyCameraTransformation(renderTarget, camera);
         renderTarget.drawTexture(this._tintedImage, Math.floor(x), Math.floor(y), this.angle, 
             this.scaleX, this.scaleY, this.alpha, Math.floor(this.cx), Math.floor(this.cy), 
             Math.floor(this.wx), Math.floor(this.wy), Math.floor(this.width), Math.floor(this.height));
@@ -104,9 +110,12 @@ export class Text{
     }
 
     draw(renderTarget, x, y, camera){
-        renderTarget.drawText(this.font, this.text, x - camera.x, y - camera.y, this.size, 
+        renderTarget.context.save();
+        applyCameraTransformation(renderTarget, camera);
+        renderTarget.drawText(this.font, this.text, x, y, this.size, 
             this.tint, this.angle, this.cx, this.cy - this.height, this.alpha, 
             this.outlineWidth, this.outlineTint);
+        renderTarget.context.restore();
     }
 }
 

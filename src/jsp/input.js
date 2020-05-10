@@ -1,3 +1,5 @@
+import JSP from './JSP.js'
+
 export const MouseKeys = {
     LEFT: 0,
     RIGHT: 2,
@@ -28,6 +30,16 @@ export const KeyboardKeys = {
     COMMA: 0xbc, STOP: 0xbe, SLASH: 0xBF,   ASTERISK: 0x6A,  PRTSCR: 0x2C, PAUSE: 0x13,
     LSHIFT: 0x10, RSHIFT: 0x10, LCONTROL: 0x11,RCONTROL: 0x11, ALT: 0x12, ALTGR: 0x12, 
     LWIN: 0x5b, RWIN: 0x5c, MENU: 0x5d, SCRLOCK: 0x9d, NUMLOCK: 0x90, CAPSLOCK: 0x14
+}
+
+function pointTransform(renderTarget, camera, x, y){
+    let matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    let rad = Math.RAD(-camera.angle);
+    matrix = Math.matMult(matrix, [1, 0, camera.x, 0, 1, camera.y, 0, 0, 1])
+    matrix = Math.matMult(matrix, [Math.cos(rad), -Math.sin(rad), 0, Math.sin(rad), Math.cos(rad), 0, 0, 0, 1]);
+    matrix = Math.matMult(matrix, [1 / camera.zoom, 0, 0, 0, 1 / camera.zoom, 0, 0, 0, 1]);
+    matrix = Math.matMult(matrix, [1, 0, -camera.anchorX * renderTarget.width, 0, 1, -camera.anchorY * renderTarget.height, 0, 0, 1]);
+    return Math.vecMult(matrix, [x, y, 1]);
 }
 
 export class Input {
@@ -119,12 +131,16 @@ export class Input {
         return this._mouseZ;
     }
 
-    worldX(camera){
-
+    worldX(renderTarget, camera){
+        if(renderTarget == undefined) renderTarget = JSP.renderTarget;
+        if(camera == undefined) camera = JSP.camera;
+        return pointTransform(renderTarget, camera, this._mouseX, this._mouseY)[0];
     }
 
-    worldY(camera) {
-
+    worldY(renderTarget, camera) {
+        if (renderTarget == undefined) renderTarget = JSP.renderTarget;
+        if (camera == undefined) camera = JSP.camera;
+        return pointTransform(renderTarget, camera, this._mouseX, this._mouseY)[1];
     }
 
     keyDown(key){

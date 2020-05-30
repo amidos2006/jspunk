@@ -33,13 +33,12 @@ export const KeyboardKeys = {
 }
 
 function pointTransform(renderTarget, camera, x, y){
-    let matrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-    let rad = Math.RAD(-camera.angle);
-    matrix = Math.matMult(matrix, [1, 0, camera.x, 0, 1, camera.y, 0, 0, 1])
-    matrix = Math.matMult(matrix, [Math.cos(rad), -Math.sin(rad), 0, Math.sin(rad), Math.cos(rad), 0, 0, 0, 1]);
-    matrix = Math.matMult(matrix, [1 / camera.zoom, 0, 0, 0, 1 / camera.zoom, 0, 0, 0, 1]);
-    matrix = Math.matMult(matrix, [1, 0, -camera.anchorX * renderTarget.width, 0, 1, -camera.anchorY * renderTarget.height, 0, 0, 1]);
-    return Math.vecMult(matrix, [x, y, 1]);
+    let matrix = Math.createMat();
+    matrix = Math.matTranslate(matrix, camera.x, camera.y);
+    matrix = Math.matRotate(matrix, -camera.angle);
+    matrix = Math.matScale(matrix, 1 / camera.zoom, 1 / camera.zoom);
+    matrix = Math.matTranslate(matrix, -camera.anchorX * renderTarget.width, -camera.anchorY * renderTarget.height);
+    return Math.pointMult(matrix, x, y);
 }
 
 export class Input {

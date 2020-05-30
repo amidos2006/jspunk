@@ -82,7 +82,7 @@ export class Camera {
         this._cameraBox.width = renderTarget.width / this.zoom;
         this._cameraBox.height = renderTarget.height / this.zoom;
         this._cameraBox._move(this.x, this.y);
-        return this._cameraBox.checkCollide(this._cameraBox);
+        return this._cameraBox.checkCollide(this._tempBox);
     }
 }
 

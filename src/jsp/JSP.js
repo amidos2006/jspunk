@@ -111,6 +111,10 @@ export default class JSP{
             return diff;
         }
 
+        Math.createMat = function(){
+            return [1, 0, 0, 0, 1, 0, 0, 0, 1];
+        }
+
         Math.matMult= function(left, right){
             let result = [];
             for(let y=0; y<3; y++){
@@ -125,6 +129,19 @@ export default class JSP{
             return result;
         }
 
+        Math.matTranslate = function (mat, x, y) {
+            return Math.matMult(mat, [1, 0, x, 0, 1, y, 0, 0, 1]);
+        }
+
+        Math.matRotate = function (mat, angle) {
+            let rad = Math.RAD(angle);
+            return Math.matMult(mat, Math.cos(rad), -Math.sin(rad), 0, Math.sin(rad), Math.cos(rad), 0, 0, 0, 1);
+        }
+
+        Math.matScale = function(mat, sx, sy){
+            return Math.matMult(mat, [sx, 0, 0, 0, sy, 0, 0, 0, 1]);
+        }
+
         Math.vecMult = function(mat, vec){
             let result = [];
             for (let y = 0; y < 3; y++) {
@@ -135,6 +152,10 @@ export default class JSP{
                 result.push(value);
             }
             return result;
+        }
+
+        Math.pointMult = function(mat, x, y){
+            return Math.vecMult(mat, [x, y, 1]);
         }
     }
 

@@ -43,11 +43,8 @@ export class Hitbox{
     }
 
     checkCollide(other){
-        if(this == other){
+        if (this == other || other == null) {
             return false;
-        }
-        if(other  == null){
-            return this.collidePoint(other.x, other.y);
         }
         if (other instanceof Grid) {
             return this._collideGrid(other);
@@ -134,5 +131,23 @@ export class Grid extends Hitbox{
             }
         }
         return false;
+    }
+}
+
+export class PixelMask extends Grid {
+    constructor(x, y, image, scale_x, scale_y) {
+        if(scale_x == undefined) scale_x = 1;
+        if(scale_y == undefined) scale_y = 1;
+        super(x, y, scale_x, scale_y, scale_x * image.w, scale_y * image.h);
+
+        let imageData = image.context.getImageData(0, 0, image.w, image.h);
+        for(let x=0; x<image.w; x++){
+            for(let y=0; y<image.h; y++){
+                let alpha = imageData.data[((y*image.w + x)*4) +3];
+                if(alpha > 0){
+                    this.setTile(x, y);
+                }
+            }
+        }
     }
 }

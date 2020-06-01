@@ -159,7 +159,7 @@ export class BitmapText extends Graphic{
             this.wx = rect.x, this.wy = rect.y;
             this.width = rect.w, this.height = rect.h;
             this.cx = -rect.xoff, this.cy = -rect.yoff;
-            super.draw(renderTarget, sx, sy - minYOff, new Camera(0, 0));
+            super.draw(renderTarget, sx, sy - minYOff, Camera.zeroCamera);
             sx += rect.xadv;
         }
         this.source = renderTarget;
@@ -192,7 +192,7 @@ export class Backdrop extends Graphic{
         let shiftY = Math.floor((y - camera.y * this.parallaxY) % this.height);
         for(let dy=-1; dy<ynumber+2; dy++){
             for(let dx=-1; dx<xnumber+2; dx++){
-                super.draw(renderTarget, shiftX + dx*this.width, shiftY + dy*this.height, new Camera(0 ,0));
+                super.draw(renderTarget, shiftX + dx*this.width, shiftY + dy*this.height, Camera.zeroCamera);
             }
         }
     }

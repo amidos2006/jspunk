@@ -63,7 +63,7 @@ export default class JSP{
 
         Math.shuffle = function(array) {
             for (let i = 0; i < array.length; i++) {
-                let i2 = rand() % array.length;
+                let i2 = Math.randint(array.length);
                 let temp = array[i];
                 array[i] = array[i2];
                 array[i2] = temp;
@@ -239,6 +239,7 @@ export default class JSP{
             this._update();
             this.renderTarget.clearTarget(this.backcolor);
             this._draw();
+            this.input._update();
         }.bind(this), 1000 / this._fps);
 
         this._prevTick = Date.now();
@@ -269,7 +270,6 @@ export default class JSP{
         if (this._currentWorld != null) {
             this._currentWorld.update();
         }
-        this.input._update();
         this._prevTick = Date.now();
     }
 

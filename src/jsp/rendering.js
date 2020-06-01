@@ -55,6 +55,11 @@ export class Color {
 }
 
 export class Camera {
+    static get uiCamera(){
+        if(this._uiCamera == undefined) this._uiCamera = new Camera(0, 0);
+        return this._uiCamera;
+    }
+
     constructor(x, y, anchorX, anchorY, angle, zoom) {
         if (anchorX == undefined) anchorX = 0;
         if (anchorY == undefined) anchorY = 0;

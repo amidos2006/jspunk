@@ -100,10 +100,11 @@ export const bitmapFontXML = `<font>
 </font>`;
 
 export class LoadingWorld extends World {
-    constructor(loadFunction, doneFunction, drawFunction) {
+    constructor(loadFunction, doneFunction, drawFunction, pressFunction) {
         super();
         this._loadFunction = loadFunction;
         this._doneFunction = doneFunction;
+        this._pressFunction = pressFunction;
         this._drawFunction = drawFunction;
     }
 
@@ -132,7 +133,9 @@ export class LoadingWorld extends World {
             JSP.renderTarget.blendMode = BlendModes.DEFAULT;
         }
         if(JSP.loader.getLoadingProgress() >= 1){
-            if(this._doneFunction) this._doneFunction();
+            if(this._pressFunction == null || this._pressFunction()){
+                if (this._doneFunction) this._doneFunction();
+            }
         }
     }
 }
@@ -162,153 +165,5 @@ export class SplashWorld extends World {
                 this.delay = frames;
             }
         }), true);
-    }
-}
-
-class Particle{
-    constructor(x,y,scale,alpha,dx,dy,dscale,dalpha){
-        this.x = x;
-        this.y = y;
-        this.scale = scale;
-        this.alpha = alpha;
-        this.dx = dx;
-        this.dy = dy;
-        this.dscale = dscale;
-        this.dalpha = dalpha;
-    }
-
-    update(){
-        this.x += this.dx;
-        this.y += this.dy;
-        this.scale += this.dscale;
-        this.alpha += this.dalpha;
-    }
-}
-
-export class Emitter extends Entity{
-    constructor(x, y, graphic, layer){
-        super(x, y);
-        this.collidable = false;
-        this.graphic = graphic;
-        this.layer = layer;
-
-        this._particles = [];
-    }
-
-    changeScale(minStartScale, maxStartScale, scaleChange, killAtZero){
-        if(minStartScale == undefined){
-            minStartScale = 1;
-        }
-        if(maxStartScale == undefined){
-            maxStartScale = minStartScale;
-        }
-        if(scaleChange == undefined){
-            scaleChange = 0;
-        }
-        if(killAtZero == undefined){
-            killAtZero = false;
-        }
-        this._scale = {
-            minStart: minStartScale,
-            maxStart: maxStartScale,
-            scaleChange: scaleChange,
-            killAtZero: killAtZero
-        }
-    }
-
-    changeMovement(startAngle, endAngle, minSpeed, maxSpeed, speedChange, killAtZero){
-        if(startAngle == undefined){
-            startAngle = 0;
-        }
-        if(endAngle == undefined){
-            endAngle = startAngle;
-        }
-        if(minSpeed == undefined){
-            minSpeed = 0;
-        }
-        if(maxSpeed == undefined){
-            maxSpeed = minSpeed;
-        }
-        if(speedChange == undefined){
-            speedChange = 0;
-        }
-        if(killAtZero == undefined){
-            killAtZero = false;
-        }
-
-        this._move = {
-            startAngle: startAngle,
-            endAngle: endAngle,
-            minSpeed: minSpeed,
-            maxSpeed: maxSpeed,
-            speedChange: speedChange,
-            killAtZero: killAtZero
-        }
-    }
-
-    changeAlpha(minStartAlpha, maxStartAlpha, alphaChange, killAtZero){
-        if (minStartAlpha == undefined) {
-            minStartAlpha = 1;
-        }
-        if (maxStartAlpha == undefined) {
-            maxStartAlpha = minStartScale;
-        }
-        if (alphaChange == undefined) {
-            alphaChange = 0;
-        }
-        if (killAtZero == undefined) {
-            killAtZero = false;
-        }
-        this._alpha = {
-            minStart: minStartAlpha,
-            maxStart: maxStartAlpha,
-            alphaChange: alphaChange,
-            killAtZero: killAtZero
-        }
-    }
-
-    _random(min, max){
-        return rand() % Math.max(1, max - min) + min;
-    }
-
-    emit(minNumber, maxNumber, minRadius, maxRadius, time){
-        if (minNumber == undefined) {
-            minNumber = 1;
-        }
-        if (maxNumber == undefined) {
-            maxNumber = minNumber;
-        }
-        if(minRadius == undefined){
-            minRadius = 0;
-        }
-        if(maxRadius == undefined){
-            maxRadius = minRadius;
-        }
-        if(time == undefined){
-            time = -1;
-        }
-        if(this._scale == undefined){
-            this.changeScale();
-        }
-        if(this._move == undefined){
-            this.changeMovement();
-        }
-        if(this._alpha == undefined){
-            this.changeAlpha();
-        }
-        let number = this._random(minNumber, maxNumber);
-        for(let i=0; i<number; i++){
-            this._particles.push(new Particle(this.x, this.y))
-        }
-    }
-
-    update(){
-        for(let p of this._particles){
-            p.update();
-        }
-    }
-
-    draw(){
-        
     }
 }

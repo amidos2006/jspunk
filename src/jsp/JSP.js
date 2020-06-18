@@ -58,7 +58,12 @@ export default class JSP{
         }
 
         Math.randint = function(value){
+            if(value == 0) return 0;
             return Math.floor(65536 * Math.random()) % value;
+        }
+
+        Math.randchoice = function(array){
+            return array[Math.randint(array.length)];
         }
 
         Math.shuffle = function(array) {

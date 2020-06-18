@@ -15,8 +15,8 @@ export class Graphic{
     constructor(source,wx,wy,ww,wh){
         if(wx == undefined) wx=0;
         if(wy == undefined) wy=0;
-        if(ww == undefined) ww=source.w;
-        if(wh == undefined) wh=source.h;
+        if(ww == undefined) ww=source.width;
+        if(wh == undefined) wh=source.height;
         this.source = source;
         this.wx = wx;
         this.wy = wy;
@@ -28,8 +28,8 @@ export class Graphic{
         this.scaleY = 1;
         this.angle = 0;
         this.alpha = 1;
-        this._tintedImage = new RenderTarget(source.w, source.h);
-        this.tint = 0xffffff;
+        this._tintedImage = new RenderTarget(source.width, source.height);
+        this.tint = Color.WHITE;
     }
 
     get tint(){
@@ -39,9 +39,10 @@ export class Graphic{
     set tint(value){
         this._tint = value;
 
-        this._tintedImage.context.clearRect(0, 0, this._tintedImage.w, this._tintedImage.h);
+        this._tintedImage.context.clearRect(0, 0, this._tintedImage.width, this._tintedImage.height);
 
-        this._tintedImage.context.fillRect(0, 0, this._tintedImage.w, this._tintedImage.h, this._tint);
+        this._tintedImage.context.fillStyle = 'rgba(' + this._tint.r + ',' + this._tint.g + ',' + this._tint.b + ',' + this._tint.a + ')';
+        this._tintedImage.context.fillRect(0, 0, this._tintedImage.width, this._tintedImage.height);
         
         this._tintedImage.context.globalCompositeOperation = "multiply";
         this._tintedImage.context.drawImage(this.source.canvas, 0, 0);
@@ -67,9 +68,9 @@ export class Text{
     constructor(font, text, size, tint, outlineWidth, outlineTint){
         if(text == undefined) text = "";
         if(size == undefined) size = 16;
-        if(tint == undefined) tint = new Color(255, 255, 255);
+        if(tint == undefined) tint = Color.WHITE;
         if(outlineWidth == undefined) outlineWidth = 0;
-        if(outlineTint == undefined) outlineTint = new Color(0, 0, 0);
+        if(outlineTint == undefined) outlineTint = Color.BLACK;
         this.cx = 0;
         this.cy = 0;
         this.angle = 0;
@@ -133,7 +134,7 @@ export class BitmapText extends Graphic{
     }
 
     set text(value){
-        this._text = value;
+        this._text = value.toString();
         let sx = 0, sy= 0;
         let width = 0, height = 0;
         let minYOff = Number.MAX_VALUE;
@@ -143,12 +144,13 @@ export class BitmapText extends Graphic{
             height = Math.max(height, rect.h);
             minYOff = Math.min(minYOff, rect.yoff);
         }
+        width = Math.max(width, 1), height = Math.max(height, 1);
         let renderTarget = this.source;
-        renderTarget.w = width, renderTarget.h = height;
+        renderTarget.width = width, renderTarget.height = height;
         renderTarget.canvas.width = width, renderTarget.canvas.height = height;
         renderTarget.context.clearRect(0, 0, width, height);
         let tintedImage = this._tintedImage;
-        tintedImage.w = width, tintedImage.h = height;
+        tintedImage.width = width, tintedImage.height = height;
         tintedImage.canvas.width = width, tintedImage.canvas.height = height;
         this._tintedImage = this.font_bitmap;
         let scaleX = this.scaleX, scaleY = this.scaleY;
@@ -206,7 +208,7 @@ export class IndexedGraphic extends Graphic{
     }
 
     _transformIndexToWindow(){
-        let gx = Math.ceil(this.source.w / this.width);
+        let gx = Math.ceil(this.source.width / this.width);
         this.wx = (this.index % gx) * this.width;
         this.wy = Math.floor(this.index / gx) * this.height;
     }

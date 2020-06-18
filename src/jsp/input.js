@@ -63,6 +63,8 @@ export class Input {
             this._keyDown[KeyboardKeys[k]] = false;
         }
         this._initKeyboard();
+
+        this._definedInputs = {};
     }
 
     _initMouse(canvas, canvasScale) {
@@ -156,6 +158,97 @@ export class Input {
 
     keyUp(key){
         return !this._keyDown[key];
+    }
+
+    defineInput(name, keys){
+        if(keys instanceof Array){
+            this._definedInputs[name] = keys;
+        }
+        else{
+            this._definedInputs[name] = [keys];
+        }
+    }
+
+    inputDown(name){
+        if(!this._definedInputs[name]) return false;
+        for(let key of this._definedInputs[name]){
+            if(key <= 2){
+                if(this.mouseDown(key)){
+                    return true;
+                }
+            }
+            else{
+                if(this.keyDown(key)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    inputPressed(name){
+        if (!this._definedInputs[name]) return false;
+        let pressed = false;
+        for (let key of this._definedInputs[name]) {
+            if (key <= 2) {
+                if(this.mousePressed(key)){
+                    pressed = true;
+                }
+                if (this.mouseDown(key)) {
+                    return false;
+                }
+            }
+            else {
+                if (this.keyPressed(key)) {
+                    pressed = true;
+                }
+                if (this.keyDown(key)) {
+                    return false;
+                }
+            }
+        }
+        return pressed;
+    }
+
+    inputReleased(name){
+        if (!this._definedInputs[name]) return false;
+        let released = false;
+        for (let key of this._definedInputs[name]) {
+            if (key <= 2) {
+                if (this.mouseReleased(key)) {
+                    released = true;
+                }
+                if (this.mouseDown(key) || this.mousePressed(key)) {
+                    return false;
+                }
+            }
+            else {
+                if (this.keyReleased(key)) {
+                    released = true;
+                }
+                if (this.keyDown(key) || this.keyPressed(key)) {
+                    return false;
+                }
+            }
+        }
+        return released;
+    }
+
+    inputUp(name){
+        if (!this._definedInputs[name]) return false;
+        for (let key of this._definedInputs[name]) {
+            if (key <= 2) {
+                if (this.mouseDown(key) || this.mousePressed(key) || this.mouseReleased(key)) {
+                    return false;
+                }
+            }
+            else {
+                if (this.keyDown(key) || this.keyPressed(key) || this.keyReleased(key)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     keyString(){

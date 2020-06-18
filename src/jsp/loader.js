@@ -181,8 +181,8 @@ export default class Loader{
             bmp.canvas.width = img.width;
             bmp.canvas.height = img.height;
             bmp.context.drawImage(img, 0, 0);
-            bmp.w = img.width;
-            bmp.h = img.height;
+            bmp.width = img.width;
+            bmp.height = img.height;
             bmp.ready = true;
         };
         return bmp;

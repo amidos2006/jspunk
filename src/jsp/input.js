@@ -194,7 +194,7 @@ export class Input {
                 if(this.mousePressed(key)){
                     pressed = true;
                 }
-                if (this.mouseDown(key)) {
+                else if (this.mouseDown(key)) {
                     return false;
                 }
             }
@@ -202,7 +202,7 @@ export class Input {
                 if (this.keyPressed(key)) {
                     pressed = true;
                 }
-                if (this.keyDown(key)) {
+                else if (this.keyDown(key)) {
                     return false;
                 }
             }
@@ -218,7 +218,7 @@ export class Input {
                 if (this.mouseReleased(key)) {
                     released = true;
                 }
-                if (this.mouseDown(key) || this.mousePressed(key)) {
+                else if (this.mouseDown(key) || this.mousePressed(key)) {
                     return false;
                 }
             }
@@ -226,7 +226,7 @@ export class Input {
                 if (this.keyReleased(key)) {
                     released = true;
                 }
-                if (this.keyDown(key) || this.keyPressed(key)) {
+                else if (this.keyDown(key) || this.keyPressed(key)) {
                     return false;
                 }
             }

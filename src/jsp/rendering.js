@@ -109,11 +109,6 @@ export class RenderTarget{
         }
         this.context = this.canvas.getContext("2d");
         this.context.imageSmoothingEnabled = JSP._smoothing;
-        if(JSP._highDensity){
-            this.canvas.width = window.devicePixelRatio * SCREEN_W;
-            this.canvas.height = window.devicePixelRatio * SCREEN_H;
-            this.context.scale(window.devicePixelRatio, window.devicePixelRatio);
-        }
     }
 
     clearTarget(col){

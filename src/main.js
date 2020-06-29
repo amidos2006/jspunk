@@ -12,7 +12,7 @@ function main() {
 		JSP.world = new SplashWorld(function () {
 			JSP.world = new TestWorld();
 		});
-	}, null, function(){ return JSP.input.mousePressed(MouseKeys.LEFT); });
+	}, null, null);
 }
 
 JSP.init("game", 320, 240, 60, 2, "debug");

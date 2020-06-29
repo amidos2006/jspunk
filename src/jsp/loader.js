@@ -39,7 +39,7 @@ export default class Loader{
             this._cache[name] = this._loadBitmapFont(filename);
         }
         if (filename.endsWith("ttf") || filename.endsWith("eot") || filename.endsWith("woff")){
-            this._cache[name] = this._loadFont(filename);
+            this._cache[name] = this._loadFont(name, filename);
         }
     }
 
@@ -84,10 +84,10 @@ export default class Loader{
         }
         else{
             this._loadingInProgress = false;
+            this._downloadables.length = 0;
             if(this._callback){
                 this._callback();
             }
-            this._downloadables.length = 0;
         }
     }
 

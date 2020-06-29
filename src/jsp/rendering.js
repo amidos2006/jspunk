@@ -92,7 +92,10 @@ export class Camera {
 }
 
 export class RenderTarget{
-    constructor(width, height){
+    constructor(width, height, smoothing, highDensity){
+        if(smoothing == undefined) smoothing = false;
+        if(highDensity == undefined) highDensity = false;
+
         this.width = width;
         this.height = height;
         this.blendMode = "source-over";
@@ -101,14 +104,19 @@ export class RenderTarget{
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;
-        if(!JSP._smoothing){
+        if(!smoothing){
             this.canvas.style.imageRendering = "-moz-crisp-edges";
             this.canvas.style.imageRendering = "-webkit-crisp-edges";
             this.canvas.style.imageRendering = "pixelated";
             this.canvas.style.imageRendering = "crisp-edges";
         }
         this.context = this.canvas.getContext("2d");
-        this.context.imageSmoothingEnabled = JSP._smoothing;
+        this.context.imageSmoothingEnabled = smoothing;
+        if (highDensity) {
+            this.canvas.width = window.devicePixelRatio * width;
+            this.canvas.height = window.devicePixelRatio * height;
+            this.context.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
     }
 
     clearTarget(col){

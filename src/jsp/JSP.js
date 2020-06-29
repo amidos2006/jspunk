@@ -166,12 +166,7 @@ export default class JSP{
 
         this.backcolor = new Color(0, 0, 0);
         this.camera = new Camera(0, 0);
-        this.renderTarget = new RenderTarget(width, height);
-        if (this._highDensity) {
-            this.renderTarget.canvas.width = window.devicePixelRatio * width;
-            this.renderTarget.canvas.height = window.devicePixelRatio * height;
-            this.renderTarget.context.scale(window.devicePixelRatio, window.devicePixelRatio);
-        }
+        this.renderTarget = new RenderTarget(width, height, smoothing, highDensity);
         this.renderTarget.canvas.id = canvasID;
         this.renderTarget.canvas.style.width = width * scale + "px";
         this.renderTarget.canvas.style.height = height * scale + "px";

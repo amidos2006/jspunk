@@ -69,8 +69,10 @@ export default class Entity{
         if (!e.collidable || e.mask == null) return null;
 
         this.mask._move(x, y);
+        e.mask._move(e.x, e.y);
         let result = this.mask.checkCollide(e.mask);
         this.mask._move(0, 0);
+        e.mask._move(0, 0);
         return result? e: null;
     }
 

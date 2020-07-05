@@ -170,7 +170,6 @@ export default class JSP{
         this.renderTarget.canvas.id = canvasID;
         this.renderTarget.canvas.style.width = width * scale + "px";
         this.renderTarget.canvas.style.height = height * scale + "px";
-        document.body.append(this.renderTarget.canvas);
     }
 
     static _initDefaultAssets(){
@@ -200,7 +199,6 @@ export default class JSP{
         this.debug = new Debug();
         if (debugID.length > 0) {
             this.debug.element.id = debugID;
-            document.body.append(this.debug.element);
         }
     }
 
@@ -251,6 +249,10 @@ export default class JSP{
         let debugEnable = this.debug.enable;
         this.debug.enable = false;
         window.addEventListener("load", function(){
+            document.body.append(this.renderTarget.canvas);
+            if(debugEnable){
+                document.body.append(this.debug.element);
+            }
             this._initDefaultAssets();
             this.loader.startLoading(function () {
                 this.debug.enable = debugEnable;

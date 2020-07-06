@@ -161,7 +161,9 @@ export class BitmapText extends Graphic{
             this.wx = rect.x, this.wy = rect.y;
             this.width = rect.w, this.height = rect.h;
             this.cx = -rect.xoff, this.cy = -rect.yoff;
-            super.draw(renderTarget, sx, sy - minYOff, Camera.zeroCamera);
+            if (this.wx > 0 || this.wy > 0) {
+                super.draw(renderTarget, sx, sy - minYOff, Camera.zeroCamera);
+            }
             sx += rect.xadv;
         }
         this.source = renderTarget;

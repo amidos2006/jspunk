@@ -258,7 +258,7 @@ export class Spritemap extends IndexedGraphic{
         if(this.current in this.animations){
             let anim = this.animations[this.current];
             this.index = anim.indeces[Math.floor(anim.index)];
-            anim.index += anim.fps/60;
+            anim.index += anim.fps/JSP._fps;
             if(anim.index >= anim.indeces.length){
                 if(anim.loop){
                     anim.index -= anim.indeces.length;
@@ -360,7 +360,7 @@ export class AnimTileMap extends TileMap{
     draw(renderTarget, x, y, camera){
         for(let value in this.animations){
             let anim = this.animations[value];
-            anim.index += anim.fps / 60;
+            anim.index += anim.fps / JSP._fps;
             if (anim.index >= anim.indeces.length) anim.index -= anim.indeces.length;
         }
 

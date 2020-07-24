@@ -141,7 +141,7 @@ export class BitmapText extends Graphic{
         for (let c of this._text) {
             let rect = this.font_data[c.charCodeAt(0)];
             width += rect.xadv;
-            height = Math.max(height, rect.h);
+            height = Math.max(height, rect.h + rect.yoff);
             minYOff = Math.min(minYOff, rect.yoff);
         }
         width = Math.max(width, 1), height = Math.max(height, 1);

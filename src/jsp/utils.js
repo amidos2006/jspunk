@@ -153,10 +153,10 @@ export class SplashWorld extends World {
     constructor(doneFunction, frames, graphic) {
         super();
 
-        if(frames == undefined) frames = 50;
+        if(frames == undefined) frames = 50 * JSP._fps / 60;
         if(graphic == undefined){
             graphic = new Spritemap(JSP.loader.getFile("logo"), 19, 23);
-            graphic.addAnimation("play", [0, 1, 2, 3, 4, 5], 12, true);
+            graphic.addAnimation("play", [0, 1, 2, 3, 4, 5], 12 * 60 / JSP._fps, true);
             graphic.playAnimation("play");
             graphic.cx = 9;
             graphic.cy = 11;

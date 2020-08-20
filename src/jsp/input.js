@@ -68,6 +68,9 @@ export class Input {
     }
 
     _initMouse(canvas, canvasScale) {
+        canvas.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        }, false);
         canvas.addEventListener('mouseup', function(e) {
             this._mouseDown[e.which - 1] = false;
             this._mouseReleased[e.which - 1] = true;

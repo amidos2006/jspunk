@@ -10,6 +10,7 @@ export default class Sfx{
 
     set freq(value){
         this._freq = value;
+        this._soundElement.playbackRate = this._freq;
     }
 
     get freq(){
@@ -18,6 +19,7 @@ export default class Sfx{
 
     set volume(value){
         this._volume = value;
+        this._soundElement.volume = this._volume;
     }
 
     get volume(){
@@ -25,7 +27,7 @@ export default class Sfx{
     }
 
     get isPlaying(){
-        return !this._soundElement.isPaused;
+        return !this._soundElement.paused;
     }
 
     get position(){

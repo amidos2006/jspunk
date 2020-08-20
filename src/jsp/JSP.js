@@ -136,7 +136,7 @@ export default class JSP{
 
         Math.matRotate = function (mat, angle) {
             let rad = Math.RAD(angle);
-            return Math.matMult(mat, Math.cos(rad), -Math.sin(rad), 0, Math.sin(rad), Math.cos(rad), 0, 0, 0, 1);
+            return Math.matMult(mat, [Math.cos(rad), -Math.sin(rad), 0, Math.sin(rad), Math.cos(rad), 0, 0, 0, 1]);
         }
 
         Math.matScale = function(mat, sx, sy){

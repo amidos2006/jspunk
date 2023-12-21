@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  <b>Current Framework Version: 0.4.2</b>
+  <b>Current Framework Version: 0.4.5</b>
 </p>
 
 Javascript port for Flashpunk version. In the current version, it is build with pieces from [allegrojs](http://allegrojs.net/) but that uses [native canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) but hopefull in the future I can replace it with [WebGL](https://webgl2fundamentals.org/) with shaders and [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API).
@@ -23,14 +23,15 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 - Collision Types and Classes (need optimization maybe another array to keep track of these different types and classes to speed up the collision)
 - Camera with anchor, rotationg, and zooming
 - Smoothing and HighDef resolution for the renderTargets
-- Handling Inputs: Keyboard and Mouse
+- Handling Inputs: Keyboard, Mouse, and Touchscreen
 - Mouse have world position
 - Sfx class to handle sounds
 - JSPunk Splash Screens similar to FlashPunk
+- Canvas Autoscalling and Resizing
 
 ## Missing Features
-- Pixel Mask
-- Camera with pivot and rotation and scaling
+- Pixel Mask Collider, Circle Collider, and Ray Casting
+- Move to WebGL instead of Canvas to speed up
 - MaskList
 - ParticleEmitter
 - Gamepad support

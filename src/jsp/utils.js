@@ -125,10 +125,11 @@ export class LoadingWorld extends World {
 
     draw(){
         super.draw();
+        let drawn = false;
         if(this._drawFunction != null){
-            this._drawFunction();
+            drawn = this._drawFunction();
         }
-        else{
+        if(!drawn){
             let height = 17;
             let width = 0.6 * JSP.renderTarget.width;
             JSP.renderTarget.drawRect((JSP.renderTarget.width - width)/2, 

@@ -123,7 +123,7 @@ export class Tween {
 
     start(forceRestart){
         this._active = true;
-        if (forceRestart != undefined && !forceRestart){
+        if (forceRestart != undefined && forceRestart){
             this._current = 0;
             this._direction = 1;
         }

@@ -3,6 +3,8 @@ import { Camera, RenderTarget, Color } from "./rendering.js";
 import { logoBase64, fontBase64, bitmapFontBase64, bitmapFontXML } from "./utils.js";
 import { Input } from "./input.js";
 import Debug from "./debug.js";
+import { SoundManager } from "./sound.js";
+import { StorageManager } from "./storage.js";
 
 export default class JSP{
     static get world(){
@@ -15,6 +17,20 @@ export default class JSP{
 
     static get delta(){
         return Date.now() - this._prevTick;
+    }
+
+    static set pause(value){
+        if(value){
+            this.soundManager.pause();
+        }
+        else{
+            this.soundManager.resume();
+        }
+        this._pause = value;
+    }
+
+    static get pause(){
+        return this._pause;
     }
 
     static _initLoader(){
@@ -33,6 +49,10 @@ export default class JSP{
 
         Math.length = function(x, y) {
             return Math.sqrt(x * x - y * y);
+        }
+
+        Math.manDist = function(x1, y1, x2, y2){
+            return Math.abs(x2 - x1) + Math.abs(y2 - y1);
         }
 
         Math.distance = function(x1, y1, x2, y2) {
@@ -168,8 +188,20 @@ export default class JSP{
         this.camera = new Camera(0, 0);
         this.renderTarget = new RenderTarget(width, height, smoothing, highDensity);
         this.renderTarget.canvas.id = canvasID;
-        this.renderTarget.canvas.style.width = width * scale + "px";
-        this.renderTarget.canvas.style.height = height * scale + "px";
+        this.dynamicScale = scale <= 0;
+        if(!this.dynamicScale){
+            this.renderTarget.canvas.scale = scale;
+            this.renderTarget.canvas.style.width = width * this.renderTarget.canvas.scale + "px";
+            this.renderTarget.canvas.style.height = height * this.renderTarget.canvas.scale + "px";
+        }
+        else{
+            window.onresize = function(){
+                this.scale = Math.min(window.innerWidth / width, window.innerHeight / height);
+                this.style.width = width * this.scale + "px";
+                this.style.height = height * this.scale + "px";
+            }.bind(this.renderTarget.canvas);
+            window.onresize();
+        }
     }
 
     static _initDefaultAssets(){
@@ -202,12 +234,16 @@ export default class JSP{
         }
     }
 
-    static _initInput(canvas, canvasScale){
-        this.input = new Input(canvas, canvasScale);
+    static _initInput(canvas){
+        this.input = new Input(canvas);
     }
 
     static _initSound(){
-        
+        this.soundManager = new SoundManager();
+    }
+
+    static _initStorage(){
+        this.storage = new StorageManager();
     }
 
     static init(canvasID, width, height, fps, scale, debugID, smoothing, highDensity){
@@ -225,21 +261,35 @@ export default class JSP{
         this._nextWorld = null;
         this._currentWorld = null;
         this._fps = fps;
+        this._pause = false;
 
         this._initLoader();
         this._initMath();
         this._initGraphics(canvasID, width, height, scale, smoothing, highDensity);
         this._initDebug(debugID);
-        this._initInput(this.renderTarget.canvas, scale);
+        this._initInput(this.renderTarget.canvas);
         this._initSound();
+        this._initStorage();
         this.debug.enable = debugID.length > 0;
 
         this._gameLoopID = window.setInterval(function(){
-            this._update();
+            if(!this.pause){
+                this._update();
+            }
             this.renderTarget.clearTarget(this.backcolor);
             this._draw();
-            this.input._update();
+            if(!this.pause){
+                this.input._update();
+            }
         }.bind(this), 1000 / this._fps);
+
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden){
+                this.pause = true;
+            } else {
+                this.pause = false;
+            }
+        }.bind(this));
 
         this._prevTick = Date.now();
         window.focus();

@@ -29,7 +29,7 @@ export const KeyboardKeys = {
     OPENBRACE: 0xdb, CLOSEBRACE: 0xdd,  COLON: 0xba, QUOTE: 0xde, BACKSLASH: 0xdc, 
     COMMA: 0xbc, STOP: 0xbe, SLASH: 0xBF,   ASTERISK: 0x6A,  PRTSCR: 0x2C, PAUSE: 0x13,
     LSHIFT: 0x10, RSHIFT: 0x10, LCONTROL: 0x11,RCONTROL: 0x11, ALT: 0x12, ALTGR: 0x12, 
-    LWIN: 0x5b, RWIN: 0x5c, MENU: 0x5d, SCRLOCK: 0x9d, NUMLOCK: 0x90, CAPSLOCK: 0x14
+    LWIN: 0x5b, RWIN: 0x5c, MENU: 0x5d, SCRLOCK: 0x9d, NUMLOCK: 0x90, CAPSLOCK: 0x14,
 }
 
 function pointTransform(renderTarget, camera, x, y){
@@ -42,7 +42,7 @@ function pointTransform(renderTarget, camera, x, y){
 }
 
 export class Input {
-    constructor(canvas, canvasScale){
+    constructor(canvas){
         this._mousePressed = {};
         this._mouseReleased = {};
         this._mouseDown = {};
@@ -51,7 +51,7 @@ export class Input {
             this._mouseReleased[MouseKeys[k]] = false;
             this._mouseDown[MouseKeys[k]] = false;
         }
-        this._initMouse(canvas, canvasScale);
+        this._initMouse(canvas);
 
         this._keyPressed = {};
         this._keyReleased = {};
@@ -67,23 +67,34 @@ export class Input {
         this._definedInputs = {};
     }
 
-    _initMouse(canvas, canvasScale) {
+    _initMouse(canvas) {
         canvas.addEventListener('contextmenu', function (e) {
             e.preventDefault();
         }, false);
-        canvas.addEventListener('mouseup', function(e) {
+        canvas.addEventListener('pointerup', function(e) {
+            if(e.pointerType == "touch"){
+                this._mouseX = -100;
+                this._mouseY = -100;
+            }
             this._mouseDown[e.which - 1] = false;
             this._mouseReleased[e.which - 1] = true;
+            window.focus();
             e.preventDefault();
         }.bind(this));
-        canvas.addEventListener('mousedown', function(e) {
+        canvas.addEventListener('pointerdown', function(e) {
+            if(e.pointerType == "touch"){
+                this._mouseX = Math.floor(e.offsetX / canvas.scale);
+                this._mouseY = Math.floor(e.offsetY / canvas.scale);
+            }
             this._mouseDown[e.which - 1] = true;
             this._mousePressed[e.which - 1] = true;
+            window.focus();
             e.preventDefault();
         }.bind(this));
-        canvas.addEventListener('mousemove', function(e) {
-            this._mouseX = Math.floor(e.offsetX / canvasScale);
-            this._mouseY = Math.floor(e.offsetY / canvasScale);
+        canvas.addEventListener('pointermove', function(e) {
+            this._mouseX = Math.floor(e.offsetX / canvas.scale);
+            this._mouseY = Math.floor(e.offsetY / canvas.scale);
+            window.focus();
             e.preventDefault();
         }.bind(this));
         canvas.addEventListener('wheel', function(e) {
@@ -108,18 +119,50 @@ export class Input {
     }
 
     mousePressed(key){
+        if(key === undefined){
+            for(let k in MouseKeys){
+                if(this._mousePressed[MouseKeys[k]]){
+                    return true;
+                }
+            }
+            return false;
+        }
         return this._mousePressed[key];
     }
 
     mouseReleased(key){
+        if(key === undefined){
+            for(let k in MouseKeys){
+                if(this._mouseReleased[MouseKeys[k]]){
+                    return true;
+                }
+            }
+            return false;
+        }
         return this._mouseReleased[key];
     }
 
     mouseDown(key){
+        if(key === undefined){
+            for(let k in MouseKeys){
+                if(this._mouseDown[MouseKeys[k]]){
+                    return true;
+                }
+            }
+            return false;
+        }
         return this._mouseDown[key];
     }
 
     mouseUp(key){
+        if(key === undefined){
+            for(let k in MouseKeys){
+                if(this._mouseDown[MouseKeys[k]]){
+                    return false;
+                }
+            }
+            return true;
+        }
         return !this._mouseDown[key];
     }
 
@@ -148,18 +191,50 @@ export class Input {
     }
 
     keyDown(key){
+        if(key === undefined){
+            for(let k in KeyboardKeys){
+                if(this._keyDown[KeyboardKeys[k]]){
+                    return true;
+                }
+            }
+            return false;
+        }
         return this._keyDown[key];
     }
 
     keyPressed(key){
+        if(key === undefined){
+            for(let k in KeyboardKeys){
+                if(this._keyPressed[KeyboardKeys[k]]){
+                    return true;
+                }
+            }
+            return false;
+        }
         return this._keyPressed[key];
     }
 
     keyReleased(key){
+        if(key === undefined){
+            for(let k in KeyboardKeys){
+                if(this._keyReleased[KeyboardKeys[k]]){
+                    return true;
+                }
+            }
+            return false;
+        }
         return this._keyReleased[key];
     }
 
     keyUp(key){
+        if(key === undefined){
+            for(let k in KeyboardKeys){
+                if(this._keyDown[KeyboardKeys[k]]){
+                    return false;
+                }
+            }
+            return true;
+        }
         return !this._keyDown[key];
     }
 

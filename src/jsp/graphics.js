@@ -54,6 +54,10 @@ export class Graphic{
     }
 
     draw(renderTarget, x, y, camera){
+        if(this.alpha == 0 || this.scaleX == 0 || this.scaleY == 0){
+            return;
+        }
+        
         //need to check if in camera or not before drawing
         renderTarget.context.save();
         applyCameraTransformation(renderTarget, camera);
@@ -161,7 +165,7 @@ export class BitmapText extends Graphic{
             this.wx = rect.x, this.wy = rect.y;
             this.width = rect.w, this.height = rect.h;
             this.cx = -rect.xoff, this.cy = -rect.yoff;
-            if (this.wx > 0 || this.wy > 0) {
+            if (this.width > 0 && this.height > 0) {
                 super.draw(renderTarget, sx, sy - minYOff, Camera.zeroCamera);
             }
             sx += rect.xadv;
@@ -402,11 +406,16 @@ export class AnimTileMap extends TileMap{
 export class GraphicList{
     constructor(){
         this.graphics = [];
+        this.shift = [];
     }
 
-    add(g){
+    add(g, sx, sy){
+        if(sx === undefined) sx = 0;
+        if(sy === undefined) sy = 0;
+
         if(this.graphics.indexOf(g) < 0){
             this.graphics.push(g);
+            this.shift.push({x: sx, y: sy});
         }
        
     }
@@ -421,6 +430,7 @@ export class GraphicList{
     removeAt(index){
         if(index >= 0 && index < this.graphics.length){
             this.graphics.splice(index, 1);
+            this.shift.splice(index, 1);
         }
     }
 
@@ -429,8 +439,10 @@ export class GraphicList{
     }
 
     draw(renderTarget, x, y, camera) {
-        for(let g of this.graphics){
-            g.draw(renderTarget, x, y, camera);
+        for(let i=0; i<this.graphics.length; i++){
+            let g = this.graphics[i];
+            let s = this.shift[i];
+            g.draw(renderTarget, x + s.x, y + s.y, camera);
         }
     }
 }

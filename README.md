@@ -18,6 +18,7 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 - `browserify` for building the distribution version and running it with `server.js`.
 
 ## Features
+- Integeration with VSCode
 - RenderTargets with blendModes and native object drawing
 - Entity, World management
 - Graphis classes: Graphic, IndexedGraphic, Spritemap, Backdrop, Text, BitmapText, GraphicList, Tilemap, and AnimTileMap classes

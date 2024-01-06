@@ -12,6 +12,11 @@
 
 Javascript port for Flashpunk version. In the current version, it is build with pieces from [allegrojs](http://allegrojs.net/) but that uses [native canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) but hopefull in the future I can replace it with [WebGL](https://webgl2fundamentals.org/) with shaders and [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API).
 
+## Requirements
+- Node.js for Running and Building.
+- `node-static` and `http` libraries to run the `server.js` with debug mode.
+- `browserify` for building the distribution version and running it with `server.js`.
+
 ## Features
 - RenderTargets with blendModes and native object drawing
 - Entity, World management
@@ -30,9 +35,8 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 - Canvas Autoscalling and Resizing
 
 ## Missing Features
-- Pixel Mask Collider, Circle Collider, and Ray Casting
+- Pixel Mask Collider, Circle Collider, Masklist, and Ray Casting
 - Move to WebGL instead of Canvas to speed up
-- MaskList
 - ParticleEmitter
 - Gamepad support
 - ~~(Maybe) automatically bind callback functions to its parent class~~

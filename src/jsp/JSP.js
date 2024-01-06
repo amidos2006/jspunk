@@ -246,7 +246,7 @@ export default class JSP{
         this.storage = new StorageManager();
     }
 
-    static init(canvasID, width, height, fps, scale, debugID, smoothing, highDensity){
+    static init(canvasID, width, height, fps, scale, debugID, smoothing){
         if(fps==undefined) fps = 60;
         if(scale==undefined) scale = 1;
         if(debugID==undefined) debugID = "";

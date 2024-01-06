@@ -251,7 +251,6 @@ export default class JSP{
         if(scale==undefined) scale = 1;
         if(debugID==undefined) debugID = "";
         if(smoothing==undefined) smoothing = false;
-        if(highDensity==undefined) highDensity = false;
 
         if (this.loader) {
             JSP.debug.log("JSP is already initialized!");
@@ -265,7 +264,7 @@ export default class JSP{
 
         this._initLoader();
         this._initMath();
-        this._initGraphics(canvasID, width, height, scale, smoothing, highDensity);
+        this._initGraphics(canvasID, width, height, scale, smoothing);
         this._initDebug(debugID);
         this._initInput(this.renderTarget.canvas);
         this._initSound();

@@ -122,8 +122,9 @@ export class Tween {
     }
 
     start(forceRestart){
+        if(forceRestart == undefined) forceRestart = false;
         this._active = true;
-        if (forceRestart != undefined && forceRestart){
+        if (forceRestart){
             this._current = 0;
             this._direction = 1;
         }
@@ -150,19 +151,26 @@ export class Alarm extends Tween {
 }
 
 export class VarTween extends Tween {
-    constructor(object, varName, fromValue, toValue, frames, type, complete, ease){
+    constructor(object, fields, frames, type, complete, ease){
         if(ease == undefined) ease = Ease.Linear;
         super(frames, type, complete);
         this.object = object;
-        this.varName = varName;
-        this.fromValue = fromValue;
-        this.toValue = toValue;
+        this.varNames = Object.keys(fields);
+        this.fromValues = {};
+        this.toValues = {};
+        for(let n of this.varNames){
+            this.fromValues[n] = this.object[n];
+            this.toValues[n] = fields[n];
+        }
         this.ease = ease;
     }
 
     _frame_update(){
         let perc = this.ease(this.percentage);
-        this.object[this.varName] = (this.toValue - this.fromValue) * perc + this.fromValue;
+        for(let n of this.varNames){
+            this.object[n] = (this.toValues[n] - this.fromValues[n]) * perc + this.fromValues[n];
+        }
+        
     }
 }
 

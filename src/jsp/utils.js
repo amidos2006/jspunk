@@ -167,7 +167,7 @@ export class SplashWorld extends World {
         graphic.alpha = 0;
         this.splashEntity = new Entity(JSP.renderTarget.width / 2, JSP.renderTarget.height / 2, graphic);
         this.addEntity(this.splashEntity);
-        this.addTween(new VarTween(graphic, "alpha", 0, 1, frames, Tween.PINGPONG, function () {
+        this.addTween(new VarTween(graphic, {"alpha": 1}, frames, Tween.PINGPONG, function () {
             if (graphic.alpha == 0) {
                 doneFunction();
             }

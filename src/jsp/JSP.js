@@ -19,6 +19,10 @@ export default class JSP{
         return Date.now() - this._prevTick;
     }
 
+    static get totalTime(){
+        return this._totalTime;
+    }
+
     static set pause(value){
         if(value){
             this.soundManager.pause();
@@ -260,11 +264,12 @@ export default class JSP{
         this._nextWorld = null;
         this._currentWorld = null;
         this._fps = fps;
+        this._totalTime = 0;
         this._pause = false;
 
         this._initLoader();
         this._initMath();
-        this._initGraphics(canvasID, width, height, scale, smoothing);
+        this._initGraphics(canvasID, width, height, scale, smoothing, false);
         this._initDebug(debugID);
         this._initInput(this.renderTarget.canvas);
         this._initSound();
@@ -322,6 +327,7 @@ export default class JSP{
         if (this._currentWorld != null) {
             this._currentWorld.update();
         }
+        this._totalTime += this.delta;
         this._prevTick = Date.now();
     }
 

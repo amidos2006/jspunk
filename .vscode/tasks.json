@@ -6,32 +6,32 @@
         {
             "label": "browserify",
             "type": "shell",
-            "command": "browserify ${workspaceFolder}/src/main.js --outfile ${workspaceFolder}/dist/out.js -t [ babelify --presets [ @babel/preset-env ] ]",
+            "command": "browserify '${workspaceFolder}/src/main.js' --outfile '${workspaceFolder}/dist/out.js' -t [ babelify --presets [ @babel/preset-env ] ]",
         },
         {
             "label": "copy_assets",
             "type": "shell",
-            "command": "cp -r ${workspaceFolder}/assets ${workspaceFolder}/dist"
+            "command": "cp -r '${workspaceFolder}/assets' '${workspaceFolder}/dist'"
         },
         {
             "label": "copy_css",
             "type": "shell",
-            "command": "cp ${workspaceFolder}/game.css ${workspaceFolder}/dist"
+            "command": "cp '${workspaceFolder}/game.css' '${workspaceFolder}/dist'"
         },
         {
             "label": "copy_index",
             "type": "shell",
-            "command": "cp ${workspaceFolder}/index.html ${workspaceFolder}/dist"
+            "command": "cp '${workspaceFolder}/index.html' '${workspaceFolder}/dist'"
         },
         {
             "label": "replace_index",
             "type": "shell",
-            "command": "sed -i 's/type=\"module\" src=\"src/main.js\"/src=\"out.js\"/g' ${workspaceFolder}/dist/index.html"
+            "command": "sed -i '' 's/type=\"module\" src=\"src\\/main.js\"/src=\"out.js\"/g' '${workspaceFolder}/dist/index.html'"
         },
         {
             "label": "delete_raw",
             "type": "shell",
-            "command": "rm -rf ${workspaceFolder}/dist/assets/data/raw"
+            "command": "rm -rf '${workspaceFolder}/dist/assets/data/raw'"
         },
         {
             "label": "build",

@@ -15,7 +15,7 @@ Javascript port for Flashpunk version. In the current version, it is build with 
 ## Requirements
 - Node.js for Running and Building.
 - `node-static` and `http` libraries to run the `server.js` with debug mode.
-- `browserify` for building the distribution version and running it with `server.js`.
+- `browserify` and `babelify` with `@babel/preset-env` for building the distribution version and running it with `server.js`.
 
 ## Features
 - Integeration with VSCode

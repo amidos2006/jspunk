@@ -14,6 +14,21 @@
             "command": "cp -r ${workspaceFolder}/assets ${workspaceFolder}/dist"
         },
         {
+            "label": "copy_css",
+            "type": "shell",
+            "command": "cp ${workspaceFolder}/game.css ${workspaceFolder}/dist"
+        },
+        {
+            "label": "copy_index",
+            "type": "shell",
+            "command": "cp ${workspaceFolder}/index.html ${workspaceFolder}/dist"
+        },
+        {
+            "label": "replace_index",
+            "type": "shell",
+            "command": "sed -i 's/type=\"module\" src=\"src/main.js\"/src=\"out.js\"/g' ${workspaceFolder}/dist/index.html"
+        },
+        {
             "label": "delete_raw",
             "type": "shell",
             "command": "rm -rf ${workspaceFolder}/dist/assets/data/raw"
@@ -21,7 +36,7 @@
         {
             "label": "build",
             "dependsOrder":"sequence",
-            "dependsOn": ["browserify", "copy_assets", "delete_raw"]
+            "dependsOn": ["browserify", "copy_assets", "delete_raw", "copy_css", "copy_index", "replace_index"]
         }
     ]
 }

@@ -1,3 +1,6 @@
+import JSP from "./JSP.js";
+import Entity from "./entity.js";
+import { BitmapText, Graphic, Text } from "./graphics.js";
 import { Tweener } from "./tweens.js";
 
 
@@ -18,7 +21,7 @@ export default class World{
     }
 
     addTween(t, start){
-        if(start == undefined) start = false;
+        if(start == undefined) start = true;
         this._tweener.addTween(t);
         if(start) t.start();
     }
@@ -35,6 +38,45 @@ export default class World{
         e.visible = true;
         e.collidable = true;
         this._addedEntitites.push(e);
+        return e;
+    }
+
+    addGraphic(g, x, y){
+        if(x === undefined) x = 0;
+        if(y === undefined) y = 0;
+
+        let e = new Entity(x, y, g);
+        return this.addEntity(e);
+    }
+
+    addBitmapText(text, x, y){
+        if(x === undefined) x = 0;
+        if(y === undefined) y = 0;
+
+        let g = new BitmapText(JSP.loader.getFile("bmpfont"), text);
+        g.cx = g.width / 2;
+        g.cy = g.height / 2;
+        return this.addGraphic(g, x, y);
+    }
+
+    addText(text, x, y){
+        if(x === undefined) x = 0;
+        if(y === undefined) y = 0;
+
+        let g = new Text(JSP.loader.getFile("font"), text);
+        g.cx = g.width / 2;
+        g.cy = g.height / 2;
+        return this.addGraphic(g, x, y);
+    }
+
+    addImage(name, x, y){
+        if(x === undefined) x = 0;
+        if(y === undefined) y = 0;
+
+        let g = new Graphic(JSP.loader.getFile(name));
+        g.cx = g.width / 2;
+        g.cy = g.height / 2;
+        return this.addGraphic(g, x, y);
     }
 
     removeEntity(e){
@@ -45,6 +87,7 @@ export default class World{
         e.visible = false;
         e.collidable = false;
         this._removedEntities.push(e);
+        return e;
     }
 
     getClass(type){

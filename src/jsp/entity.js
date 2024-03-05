@@ -32,7 +32,7 @@ export default class Entity{
     }
 
     addTween(t, start){
-        if (start == undefined) start = false;
+        if (start == undefined) start = true;
         this._tweener.addTween(t);
         if (start) t.start();
     }

@@ -252,7 +252,7 @@ export default class JSP{
 
     static init(canvasID, width, height, fps, scale, debugID, smoothing){
         if(fps==undefined) fps = 60;
-        if(scale==undefined) scale = 1;
+        if(scale==undefined) scale = -1;
         if(debugID==undefined) debugID = "";
         if(smoothing==undefined) smoothing = false;
 

@@ -111,6 +111,12 @@ export class SoundManager{
         }
     }
 
+    stop(){
+        for(let s of this._playingSounds){
+            s.stop();
+        }
+    }
+
     _addSound(s){
         if(this._playingSounds.indexOf(s) < 0){
             this._playingSounds.push(s);

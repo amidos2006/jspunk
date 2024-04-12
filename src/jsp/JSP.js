@@ -184,13 +184,12 @@ export default class JSP{
         }
     }
 
-    static _initGraphics(canvasID, width, height, scale, smoothing, highDensity){
+    static _initGraphics(canvasID, width, height, scale, smoothing){
         this._smoothing = smoothing;
-        this._highDensity = highDensity;
 
         this.backcolor = new Color(0, 0, 0);
         this.camera = new Camera(0, 0);
-        this.renderTarget = new RenderTarget(width, height, smoothing, highDensity);
+        this.renderTarget = new RenderTarget(width, height, smoothing);
         this.renderTarget.canvas.id = canvasID;
         this.dynamicScale = scale <= 0;
         if(!this.dynamicScale){

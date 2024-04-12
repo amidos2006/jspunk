@@ -37,6 +37,9 @@ export class Graphic{
     }
 
     set tint(value){
+        if(this._tint && this._tint.r == value.r && this._tint.g == value.g && this._tint.b == value.b && this._tint.a == value.a){
+            return;
+        }
         this._tint = value;
 
         this._tintedImage.context.clearRect(0, 0, this._tintedImage.width, this._tintedImage.height);
@@ -138,6 +141,9 @@ export class BitmapText extends Graphic{
     }
 
     set text(value){
+        if(this._text == value){
+            return;
+        }
         this._text = value.toString();
         let sx = 0, sy= 0;
         let width = 0, height = 0;
@@ -174,7 +180,9 @@ export class BitmapText extends Graphic{
         this._tintedImage = tintedImage;
         this.wx = 0, this.wy = 0, this.cx = 0, this.cy = 0;
         this.width = width, this.height = height;
-        this.tint = this._tint;
+        let temp = this._tint;
+        this._tint = null;
+        this.tint = temp;
         this.cx = cx, this.cy = cy;
         this.scaleX = scaleX, this.scaleY = scaleY;
     }
@@ -413,17 +421,18 @@ export class GraphicList{
         if(sx === undefined) sx = 0;
         if(sy === undefined) sy = 0;
 
-        if(this.graphics.indexOf(g) < 0){
-            this.graphics.push(g);
-            this.shift.push({x: sx, y: sy});
-        }
+        // if(this.graphics.indexOf(g) < 0){
+        this.graphics.push(g);
+        this.shift.push({x: sx, y: sy});
+        // }
        
     }
 
     remove(g){
         let index = this.graphics.indexOf(g);
-        if(index >= 0){
+        while(index >= 0){
             this.removeAt(index);
+            index = this.graphics.indexOf(g);
         }
     }
 

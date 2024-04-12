@@ -136,11 +136,17 @@ export class Tween {
 
     cancel(){
         this._active = false;
-        this._parent.removeTween(this);
+        if(this._parent){
+            this._parent.removeTween(this);
+        }
     }
 
     get percentage(){
         return Math.max(0, Math.min(this._current / this._total, 1));
+    }
+
+    get active(){
+        return this._active;
     }
 }
 

@@ -166,6 +166,19 @@ export class Input {
         return !this._mouseDown[key];
     }
 
+    clearMouse(key){
+        if(key === undefined){
+            for(let k in MouseKeys){
+                this._mousePressed[MouseKeys[k]] = false;
+                this._mouseReleased[MouseKeys[k]] = false;
+            }
+        }
+        else{
+            this._mousePressed[key] = false;
+            this._mouseReleased[key] = false;
+        }
+    }
+
     mouseX(){
         return this._mouseX;
     }
@@ -236,6 +249,19 @@ export class Input {
             return true;
         }
         return !this._keyDown[key];
+    }
+
+    clearKey(key){
+        if(key === undefined){
+            for (let k in KeyboardKeys) {
+                this._keyPressed[KeyboardKeys[k]] = false;
+                this._keyReleased[KeyboardKeys[k]] = false;
+            }
+        }
+        else{
+            this._keyPressed[key] = false;
+            this._keyPressed[key] = false;
+        }
     }
 
     defineInput(name, keys){
@@ -329,19 +355,24 @@ export class Input {
         return true;
     }
 
+    clearInput(name){
+        if (!this._definedInputs[name]) return false;
+        for (let key of this._definedInputs[name]) {
+            if (key <= 2) {
+                this.clearMouse(key);
+            }
+            else {
+                this.clearKey(key);
+            }
+        }
+    }
+
     keyString(){
         return this._keyString;
     }
 
     _update(){
-        for(let k in MouseKeys){
-            this._mousePressed[MouseKeys[k]] = false;
-            this._mouseReleased[MouseKeys[k]] = false;
-        }
-
-        for (let k in KeyboardKeys) {
-            this._keyPressed[KeyboardKeys[k]] = false;
-            this._keyReleased[KeyboardKeys[k]] = false;
-        }
+        this.clearMouse();
+        this.clearKey();
     }
 }

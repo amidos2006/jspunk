@@ -15,6 +15,7 @@ export default class Entity{
         this.y = y;
         this.graphic = graphic;
         this.render_target=null;
+        this.camera = null;
         this.layer = 0;
         this.followCamera = true;
         this.world = null;
@@ -35,6 +36,7 @@ export default class Entity{
         if (start == undefined) start = true;
         this._tweener.addTween(t);
         if (start) t.start();
+        return t;
     }
 
     removeTween(t){
@@ -155,6 +157,8 @@ export default class Entity{
 
         let currentTarget = JSP.renderTarget;
         if(this.render_target != null) currentTarget = this.render_target;
-        this.graphic.draw(currentTarget, this.x, this.y, JSP.camera);
+        let currentCamera = JSP.camera;
+        if(this.camera != null) currentCamera = this.camera;
+        this.graphic.draw(currentTarget, this.x, this.y, currentCamera);
     }
 }
